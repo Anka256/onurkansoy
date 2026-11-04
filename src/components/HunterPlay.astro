@@ -13,7 +13,7 @@ document.addEventListener('astro:page-load', () => {
   const c = h.querySelector('canvas')!, e = new HunterEnv().reset(), pos = { x: 0.5, y: 0.74 }; let f = fit(c); const ro = new ResizeObserver(() => (f = fit(c))); ro.observe(c);
   const hud = h.querySelector<HTMLElement>('[data-hud]')!, ev = h.querySelector<HTMLElement>('[data-ev]')!, acts = h.querySelector<HTMLElement>('[data-acts]')!, auto = h.querySelector<HTMLButtonElement>('[data-auto]')!;
   let run = false, raf = 0, last = 0;
-  ACTIONS.forEach((a, i) => { const b = document.createElement('button'); b.type = 'button'; b.textContent = a.toLowerCase(); b.onclick = () => act(i); acts.append(b); });
+  ['Go to camp', 'Go to forest', 'Go to plains', 'Forage', 'Small hunt', 'Big hunt', 'Rest'].forEach((a, i) => { const b = document.createElement('button'); b.type = 'button'; b.textContent = a; b.onclick = () => act(i); acts.append(b); });
   const show = () => metrics(hud, hunterMetrics(e));
   function act(i: number) { if (e.done) return; e.step(i); ev.textContent = e.done ? (e.dead ? `Game over: ${e.cause}, day ${e.day + 1}.` : 'You survived 30 days.') : e.events.join(', ') || ACTIONS[i].toLowerCase(); show(); }
   h.querySelector<HTMLButtonElement>('[data-reset]')!.onclick = () => { e.reset(); ev.textContent = 'New game. Every step costs 1 energy.'; show(); };

@@ -17,7 +17,7 @@ export function hnsMetrics(q: HnsPlayer): [string, string | number][] {
   return [['Time', `${t}/240`], ['Phase', prep ? 'Prep' : 'Seek'], ['Hider', prep ? 'Free' : f[14] ? 'Seen' : 'Hidden'], ['Distance', `${Math.hypot(f[0] - f[3], f[1] - f[4]).toFixed(1)} m`], ['Unseen', steps ? `${Math.round((100 * (steps - seen)) / steps)}%` : '-'], ['Boxes locked', `${locks}/2`], ['Hider return', `${r >= 0 ? '+' : ''}${r}`], ['Seeker return', `${r > 0 ? '-' : '+'}${Math.abs(r)}`], ['Episode', `${q.ep + 1}/${d.episodes.length}`]];
 }
 export function hunterMetrics(e: HunterEnv): [string, string | number][] {
-  return [['Day', `${Math.min(e.day + 1, 30)}/30`], ['Phase', PHASES[e.phase]], ['Location', LOCS[e.loc]], ['Energy', `${e.energy}/15`], ['Health', e.health ? 'Injured' : 'Healthy'], ['Fruit', `${e.fruit}/4`], ['Skill', `${e.skill}/2`], ['Return', e.ret]];
+  return [['Day', `${Math.min(e.day + 1, 30)}/30`], ['Phase', PHASES[e.phase][0] + PHASES[e.phase].slice(1).toLowerCase()], ['Location', LOCS[e.loc][0] + LOCS[e.loc].slice(1).toLowerCase()], ['Energy', `${e.energy}/15`], ['Health', e.health ? 'Injured' : 'Healthy'], ['Fruit', `${e.fruit}/4`], ['Skill', `${e.skill}/2`], ['Return', e.ret]];
 }
 export function fit(c: HTMLCanvasElement) {
   const r = c.getBoundingClientRect(), d = Math.min(devicePixelRatio || 1, 2);

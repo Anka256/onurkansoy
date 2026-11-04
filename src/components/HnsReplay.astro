@@ -3,6 +3,7 @@ const { note = true } = Astro.props;
 ---
 <div class="hns" data-hns>
   <div class="arena"><canvas aria-label="Replay of a trained hider, red, and seeker, green"></canvas></div>
+  <p class="legend"><span><i style="background:var(--hider)"></i>Hider</span><span><i style="background:var(--seek)"></i>Seeker</span><span><i style="background:var(--box);border-radius:1px"></i>Box</span></p>
   <div class="met" data-hud></div>
   <div class="ctrl">
     <button type="button" data-a="play">pause</button>

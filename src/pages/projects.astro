@@ -8,7 +8,7 @@ const list=[...projects].sort((x,y)=>order(y.when)-order(x.when));
 const tags=['All','Research','RL','LLM','Agents','Games','Tools'];
 ---
 <Base title="Projects" description="AI engineering projects by Onur Kansoy: agents, fine-tuning, RAG and tools.">
-<div class="wrap pagehead"><span class="kicker">Projects</span><h1>Everything I built</h1><p class="lead">Everything I have built, newest first: research, agents, language models, tools and games.</p></div>
+<div class="wrap pagehead"><span class="kicker">Projects</span><h1>Things I have built</h1><p class="lead">Research, agents, language models, tools and games, newest first.</p></div>
 <div class="wrap"><div class="filters" role="group" aria-label="Filter projects">{tags.map((t,i)=><button class="btn" type="button" data-f={t} aria-pressed={i===0?'true':'false'}>{t}</button>)}</div>
 <ol class="tl">{list.map(p=><li data-t={p.tags.join('|')}><time class="mono">{p.when}</time><div><h2>{p.to?<a href={`${b}${p.to}`}>{p.name}</a>:p.name}</h2><p>{p.text}</p><div class="meta">{p.tags.map(t=><span class="tag">{t}</span>)}{p.links.map(l=><a class="mono" href={l.href}>{l.label} →</a>)}</div></div></li>)}</ol></div>
 </Base>
