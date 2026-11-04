@@ -68,4 +68,6 @@ table{border-collapse:collapse;font-variant-numeric:tabular-nums}
 .grid2{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:40px;align-items:start}
 @media(max-width:860px){.grid2{grid-template-columns:minmax(0,1fr);gap:24px}}
 .pre{opacity:.25;transform:translateY(16px)}.rv{transition:opacity .6s ease,transform .6s ease}
+.theme-vt::view-transition-old(root),.theme-vt::view-transition-new(root){animation-duration:.5s;animation-timing-function:ease}
+.theme-fade,.theme-fade *{transition:background-color .5s ease,color .5s ease,border-color .5s ease,fill .5s ease!important}
 @media(prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important;scroll-behavior:auto!important}}

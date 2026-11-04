@@ -8,7 +8,17 @@ function progress() {
 addEventListener('scroll', progress, { passive: true });
 document.getElementById('theme')?.addEventListener('click', () => {
   const r = document.documentElement, d = r.dataset.theme === 'dark' ? 'light' : 'dark';
-  r.dataset.theme = d; try { localStorage.setItem('site-theme', d); } catch {}
+  try { localStorage.setItem('site-theme', d); } catch {}
+  const flip = () => { r.dataset.theme = d; };
+  if (reduce) return flip();
+  const doc = document as any;
+  if (doc.startViewTransition) {
+    r.classList.add('theme-vt');
+    doc.startViewTransition(flip).finished.finally(() => r.classList.remove('theme-vt'));
+  } else {
+    r.classList.add('theme-fade'); flip();
+    setTimeout(() => r.classList.remove('theme-fade'), 550);
+  }
 });
 const navh = () => { const n = document.querySelector<HTMLElement>('.nav'); if (n) document.documentElement.style.setProperty('--navh', n.offsetHeight + 'px'); };
 addEventListener('resize', navh);
