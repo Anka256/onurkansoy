@@ -230,12 +230,13 @@ export class RecWorld {
 
 /* ---- Logic grid: AC-3 steps from Appendix B of the Smart Zebra paper ---- */
 export const ZEBRA = {
+  clues: ['Peter is in the second house.', 'Arnold is directly left of the one who drinks water.', 'The one who drinks water is directly left of the one who likes milk.'],
   rows: ['Name', 'Drink'], vals: [['Peter', 'Eric', 'Arnold'], ['tea', 'water', 'milk']],
   steps: [
-    { say: 'Clue 1: Peter is in the second house.', rm: ['0-0-Peter', '2-0-Peter', '1-0-Eric', '1-0-Arnold'] },
-    { say: 'Clue 3: water is directly left of milk, so water is in {1,2} and milk in {2,3}.', rm: ['2-1-water', '0-1-milk'] },
-    { say: 'Clue 2: Arnold is directly left of water. Water in house 1 has no partner.', rm: ['0-1-water'] },
-    { say: 'Forced: Arnold = 1, water = 2, milk = 3.', rm: ['1-1-tea', '1-1-milk', '2-1-tea', '0-0-Eric', '2-0-Arnold'] },
+    { clue: 1, say: 'Applying clue 1: Peter is in house 2, so he is removed everywhere else.', rm: ['0-0-Peter', '2-0-Peter', '1-0-Eric', '1-0-Arnold'] },
+    { clue: 3, say: 'Applying clue 3: water must be in house 1 or 2, and milk in house 2 or 3.', rm: ['2-1-water', '0-1-milk'] },
+    { clue: 2, say: 'Applying clue 2: water in house 1 would leave Arnold no house, so it is removed.', rm: ['0-1-water'] },
+    { clue: 0, say: 'Forced: Arnold is in house 1, water in house 2, milk in house 3. Solved.', rm: ['1-1-tea', '1-1-milk', '2-1-tea', '0-0-Eric', '2-0-Arnold'] },
   ],
 };
 export function drawZebra(g: CanvasRenderingContext2D, W: number, H: number, gone: Set<string>) {

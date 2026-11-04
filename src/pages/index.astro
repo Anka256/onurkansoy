@@ -68,7 +68,7 @@ document.addEventListener('astro:page-load', async () => {
   try { d = await (await fetch(import.meta.env.BASE_URL.replace(/\/$/, '') + '/data/hns.json')).json(); } catch { return; }
   if (!cv.isConnected) return;
   const ro = new ResizeObserver(() => { f = fit(cv); hp?.resize(); hp?.draw(); if (reduce()) still(); }); ro.observe(cv);
-  const notes: Record<string, string> = { hunter: 'The real environment rules, played here by the scripted careful policy from my report.', zebra: 'The AC-3 worked example from the paper appendix.', rec: 'A live simplified sketch of the K update. Red agents start famous.', hide: 'Real rollout of the trained policies.' };
+  const notes: Record<string, string> = { hunter: 'The real environment rules, played here by the scripted careful policy from my report.', zebra: 'Clues: ' + ZEBRA.clues.map((c, i) => `(${i + 1}) ${c}`).join(' '), rec: 'A live simplified sketch of the K update. Red agents start famous.', hide: 'Real rollout of the trained policies.' };
   const ghost = document.getElementById('ghost') as HTMLCanvasElement;
   const fade = () => { if (reduce()) return; ghost.width = cv.width; ghost.height = cv.height; ghost.getContext('2d')!.drawImage(cv, 0, 0); ghost.getAnimations().forEach((a) => a.cancel()); ghost.animate([{ opacity: 1 }, { opacity: 0 }], { duration: 900, easing: 'cubic-bezier(.4,0,.2,1)' }); };
   const set = (m: string) => { if (m === mode) return; fade(); mode = m; note.textContent = notes[m]; if (m === 'hide') { hp = hp || new HnsPlayer(cv, d); hp.ep = 9; hp.playing = true; hp.onTick = (q) => metrics(hud, hnsMetrics(q)); } else if (hp) { hp.destroy(); hp = null; f = fit(cv); } if (reduce()) still(); };

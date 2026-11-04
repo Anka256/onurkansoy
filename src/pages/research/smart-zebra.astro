@@ -21,7 +21,7 @@ const finds = [
 <div class="wrap grid2">
  <div class="prose rv"><h2 class="h2">The problem</h2><p>Zebra puzzles, also known as Einstein's puzzles, ask you to match M attributes to N houses from a set of text clues. They are NP-complete constraint satisfaction problems with one correct answer, which makes them a controlled and automatically verifiable test of logical reasoning. Their linguistic form also suits language models better than a grid puzzle such as Sudoku.</p><p>Current models struggle with them, and prior work mostly evaluates prompting or hands the puzzle to a formal solver. We asked a different question: how far can a small model get on its own with a complete training recipe, and can a classical algorithm improve how it reasons?</p>
  <div class="stats"><div><b>18.75%</b><span>base model, small puzzles, AC-3 prompt</span></div><div><b>66.56%</b><span>after SFT with the same prompt</span></div></div></div>
- <div class="rv"><div class="arena"><canvas id="zb" style="width:100%;aspect-ratio:4/3" aria-label="Constraint propagation on a three-house puzzle"></canvas></div><div class="hudline" id="zh" style="min-height:38px"></div><div class="ctrl"><button id="zn" type="button">next step</button><button id="zr" type="button">restart</button></div><p class="note">The worked example from the AC-3 prompt in the paper's appendix.</p></div>
+ <div class="rv"><ol class="clues" id="zc" aria-label="Puzzle clues"></ol><div class="arena"><canvas id="zb" style="width:100%;aspect-ratio:4/3" aria-label="Constraint propagation on a three-house puzzle"></canvas></div><div class="hudline" id="zh" style="min-height:38px"></div><div class="ctrl"><button id="zn" type="button">next step</button><button id="zr" type="button">restart</button></div><p class="note">The worked example from the AC-3 prompt in the paper's appendix.</p></div>
 </div>
 <div class="wrap section"><h2 class="h2 rv">The recipe</h2><ol class="recipe">{steps.map(([h,p])=><li class="rv"><h3>{h}</h3><p set:html={p}></p></li>)}</ol>
 <figure class="rv zf"><img src={`${b}/media/research/zebra_reward.webp`} alt="Diagram of cell-accuracy rewards: model output compared to ground truth, and the normalized and bucketed reward functions" loading="lazy"><figcaption class="note">Cell-accuracy rewards. Two wrong names give puzzle accuracy 0 but cell accuracy 7/9, so the model still receives a useful signal.</figcaption></figure></div>
@@ -34,13 +34,14 @@ const finds = [
 <style is:global>
 .dl{padding-left:18px;margin:0}.dl li{margin-block:6px}
 .recipe{list-style:none;counter-reset:s;margin:0;padding:0;display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:16px}.recipe li{counter-increment:s;background:var(--panel);border:2px solid var(--wall);padding:18px;min-width:0}.recipe h3{font-size:23px;margin-bottom:6px}.recipe h3::before{content:counter(s) ". ";color:var(--mut);font-weight:400}.recipe p{font-size:16px;line-height:1.5}
+.clues{list-style:none;counter-reset:c;margin:0 0 12px;padding:0;display:grid;gap:6px}.clues li{counter-increment:c;display:grid;grid-template-columns:auto minmax(0,1fr);gap:9px;padding:7px 10px;border:1px solid var(--line);font-size:15px;line-height:1.4;transition:background .25s,border-color .25s}.clues li::before{content:"Clue " counter(c);font:12.5px/1.6 var(--mono);color:var(--mut);white-space:nowrap}.clues li.on{background:var(--panel);border-color:var(--seek);box-shadow:inset 3px 0 0 var(--seek)}
 .zf{margin:20px 0 0}.zf img{width:100%;background:#fff;border:2px solid var(--wall)}.zd{margin-top:14px}.zd summary{cursor:pointer;font-size:14px;padding-block:6px}
 .finds{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:22px 36px}.finds h3{font-size:21px;margin-bottom:5px}.finds>div{min-width:0;border-top:1px solid var(--line);padding-top:10px}
 @media(max-width:760px){.recipe,.finds{grid-template-columns:minmax(0,1fr)}}
 </style>
 <script>
 import { ZEBRA, drawZebra, fit } from '../../scripts/sims';
-document.addEventListener('astro:page-load',()=>{const c=document.getElementById('zb') as HTMLCanvasElement;if(!c)return;let f=fit(c),g=new Set<string>(),i=0;const h=document.getElementById('zh')!;
-const d=()=>{drawZebra(f.g,f.W,f.H,g);h.textContent=i?ZEBRA.steps[i-1].say:'Every cell starts with all candidates. Press next step.'};new ResizeObserver(()=>{f=fit(c);d()}).observe(c);
+document.addEventListener('astro:page-load',()=>{const c=document.getElementById('zb') as HTMLCanvasElement;if(!c)return;let f=fit(c),g=new Set<string>(),i=0;const h=document.getElementById('zh')!,zc=document.getElementById('zc')!;zc.innerHTML=ZEBRA.clues.map(x=>`<li>${x}</li>`).join('');
+const d=()=>{drawZebra(f.g,f.W,f.H,g);h.textContent=i?ZEBRA.steps[i-1].say:'Every cell starts with all candidates. Press next step.';[...zc.children].forEach((l,k)=>l.classList.toggle('on',!!i&&ZEBRA.steps[i-1].clue===k+1))};new ResizeObserver(()=>{f=fit(c);d()}).observe(c);
 document.getElementById('zn')!.onclick=()=>{if(i<ZEBRA.steps.length){ZEBRA.steps[i].rm.forEach(x=>g.add(x));i++;d()}};document.getElementById('zr')!.onclick=()=>{g=new Set();i=0;d()};d()});
 </script>
