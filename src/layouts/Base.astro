@@ -1,0 +1,35 @@
+---
+import { ClientRouter } from 'astro:transitions';
+import '@fontsource-variable/familjen-grotesk';
+import '@fontsource/dm-mono/400.css';
+import '@fontsource/dm-mono/500.css';
+import '../styles/global.css';
+const { title = 'Onur Kansoy', description = 'Onur Kansoy: reinforcement learning, multi-agent systems and game RL.' } = Astro.props;
+const b = import.meta.env.BASE_URL.replace(/\/$/, '');
+const nav = [['Research','/research'],['Projects','/projects'],['Games','/games'],['About','/about'],['CV','/cv']];
+const full = title === 'Onur Kansoy' ? title : `${title} · Onur Kansoy`;
+---
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"><meta name="color-scheme" content="only light"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>{full}</title><meta name="description" content={description}>
+<link rel="canonical" href={new URL(Astro.url.pathname, Astro.site)}><meta property="og:image" content={new URL(`${b}/media/onur.webp`, Astro.site)}><meta property="og:title" content={full}><meta property="og:description" content={description}><meta property="og:type" content="website">
+<link rel="icon" href={`${b}/favicon.png`} type="image/png"><link rel="apple-touch-icon" href={`${b}/favicon.png`}>
+<script is:inline>(()=>{const f=()=>{try{const t=localStorage.getItem('site-theme');document.documentElement.dataset.theme=t==='dark'?'dark':'light'}catch(e){}};f();document.addEventListener('astro:after-swap',f)})();</script>
+<ClientRouter />
+</head>
+<body>
+<a class="skip" href="#main">Skip to content</a>
+<header class="nav" transition:persist="nav"><div class="in">
+ <a class="brand" href={`${b}/`}>Onur Kansoy</a>
+ <nav class="links" aria-label="Main">{nav.map(([n,h])=><a href={`${b}${h}/`} data-nav={h}>{n}</a>)}</nav>
+ <button class="theme" id="theme" type="button" aria-label="Switch between light and dark theme" title="Light or dark theme"><svg class="moon" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M20.7 14.7A9 9 0 0 1 9.3 3.3a9 9 0 1 0 11.4 11.4Z"/></svg><svg class="sun" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><circle cx="12" cy="12" r="4.2" fill="currentColor"/><path d="M12 2v2.4M12 19.6V22M2 12h2.4M19.6 12H22M4.9 4.9l1.7 1.7M17.4 17.4l1.7 1.7M4.9 19.1l1.7-1.7M17.4 6.6l1.7-1.7"/></svg></button>
+ </div><div class="bar" id="bar"></div></header>
+<main id="main"><slot /></main>
+<footer class="foot"><div class="wrap in">
+ <div class="mails"><a class="big" href="mailto:onurkansoy@std.iyte.edu.tr">onurkansoy@std.iyte.edu.tr</a><a class="mono" href="mailto:onurkansoy01@gmail.com">onurkansoy01@gmail.com</a></div>
+ <div class="ls"><a href="https://github.com/Anka256">GitHub</a><a href="https://huggingface.co/TheArchitect256">Hugging Face</a><a href="https://linkedin.com/in/onurkansoy">LinkedIn</a></div>
+</div></footer>
+<script src="../scripts/motion.ts"></script>
+</body></html>

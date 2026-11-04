@@ -1,0 +1,22 @@
+---
+import Base from '../layouts/Base.astro';
+import { projects } from '../data/site';
+const b = import.meta.env.BASE_URL.replace(/\/$/, '');
+const M=['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+const order=(s:string)=>{if(!s)return -1;const p=s.split(' ');return p.length===1?+p[0]*12:+p[1]*12+M.indexOf(p[0])};
+const list=[...projects].sort((x,y)=>order(y.when)-order(x.when));
+const tags=['All','Research','RL','LLM','Agents','Games','Tools'];
+---
+<Base title="Projects" description="AI engineering projects by Onur Kansoy: agents, fine-tuning, RAG and tools.">
+<div class="wrap pagehead"><span class="kicker">Projects</span><h1>Everything I built</h1><p class="lead">Everything I have built, newest first: research, agents, language models, tools and games.</p></div>
+<div class="wrap"><div class="filters" role="group" aria-label="Filter projects">{tags.map((t,i)=><button class="btn" type="button" data-f={t} aria-pressed={i===0?'true':'false'}>{t}</button>)}</div>
+<ol class="tl">{list.map(p=><li data-t={p.tags.join('|')}><time class="mono">{p.when}</time><div><h2>{p.to?<a href={`${b}${p.to}`}>{p.name}</a>:p.name}</h2><p>{p.text}</p><div class="meta">{p.tags.map(t=><span class="tag">{t}</span>)}{p.links.map(l=><a class="mono" href={l.href}>{l.label} →</a>)}</div></div></li>)}</ol></div>
+</Base>
+<style is:global>
+.filters{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:14px}.filters .btn[aria-pressed="true"]{background:var(--fg);color:var(--bg)}
+.tl{list-style:none;margin:0;padding:0;border-top:2px solid var(--wall)}.tl li{display:grid;grid-template-columns:110px minmax(0,1fr);gap:20px;padding-block:20px;border-bottom:1px solid var(--line)}.tl time{font-size:13px;color:var(--mut);padding-top:6px}.tl h2{font-size:clamp(24px,3vw,32px)}.tl p{max-width:68ch;margin-block:6px 10px}.meta{display:flex;gap:6px 12px;flex-wrap:wrap;align-items:center;font-size:13px;color:var(--mut)}.meta a{color:var(--fg)}
+@media(max-width:620px){.tl li{grid-template-columns:minmax(0,1fr);gap:2px}}
+</style>
+<script>
+document.addEventListener('astro:page-load',()=>{const bs=document.querySelectorAll<HTMLButtonElement>('[data-f]');bs.forEach(b=>b.onclick=()=>{bs.forEach(x=>x.setAttribute('aria-pressed',String(x===b)));document.querySelectorAll<HTMLElement>('.tl li').forEach(l=>{l.hidden=b.dataset.f!=='All'&&!l.dataset.t!.split('|').includes(b.dataset.f!)})})});
+</script>

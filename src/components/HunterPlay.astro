@@ -1,0 +1,27 @@
+<div class="hp" data-hunter>
+  <div class="arena"><canvas style="aspect-ratio:4/3" aria-label="Hunter-Gatherer map with camp, forest and plains"></canvas></div>
+  <div class="met" data-hud></div>
+  <div class="hudline" data-ev style="color:var(--mut)"></div>
+  <div class="ctrl hbtn" data-acts></div>
+  <div class="ctrl"><button type="button" data-auto aria-pressed="false">let a scripted policy play</button><button type="button" data-reset>new game</button></div>
+</div>
+<script>
+import { HunterEnv, ACTIONS, drawHunter, careful, reduce, fit, metrics, hunterMetrics } from '../scripts/sims';
+let stop: (() => void) | null = null;
+document.addEventListener('astro:page-load', () => {
+  const h = document.querySelector<HTMLElement>('[data-hunter]'); if (!h) return;
+  const c = h.querySelector('canvas')!, e = new HunterEnv().reset(), pos = { x: 0.5, y: 0.74 }; let f = fit(c); const ro = new ResizeObserver(() => (f = fit(c))); ro.observe(c);
+  const hud = h.querySelector<HTMLElement>('[data-hud]')!, ev = h.querySelector<HTMLElement>('[data-ev]')!, acts = h.querySelector<HTMLElement>('[data-acts]')!, auto = h.querySelector<HTMLButtonElement>('[data-auto]')!;
+  let run = false, raf = 0, last = 0;
+  ACTIONS.forEach((a, i) => { const b = document.createElement('button'); b.type = 'button'; b.textContent = a.toLowerCase(); b.onclick = () => act(i); acts.append(b); });
+  const show = () => metrics(hud, hunterMetrics(e));
+  function act(i: number) { if (e.done) return; e.step(i); ev.textContent = e.done ? (e.dead ? `Game over: ${e.cause}, day ${e.day + 1}.` : 'You survived 30 days.') : e.events.join(', ') || ACTIONS[i].toLowerCase(); show(); }
+  h.querySelector<HTMLButtonElement>('[data-reset]')!.onclick = () => { e.reset(); ev.textContent = 'New game. Every step costs 1 energy.'; show(); };
+  auto.onclick = () => { run = !run; auto.setAttribute('aria-pressed', String(run)); };
+  const loop = (t: number) => { raf = requestAnimationFrame(loop); if (run && t - last > 260) { last = t; if (e.done) { e.reset(); } act(careful(e)); } drawHunter(f.g, f.W, f.H, e, pos, t); };
+  ev.textContent = 'You start in camp with 6 energy. Try to reach day 30.'; show();
+  if (reduce()) drawHunter(f.g, f.W, f.H, e, pos, 0); else raf = requestAnimationFrame(loop);
+  stop = () => { cancelAnimationFrame(raf); ro.disconnect(); };
+});
+document.addEventListener('astro:before-swap', () => stop?.());
+</script>

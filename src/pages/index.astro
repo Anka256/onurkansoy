@@ -1,0 +1,89 @@
+---
+import Base from '../layouts/Base.astro';
+import HnsReplay from '../components/HnsReplay.astro';
+import { courses } from '../data/site';
+const b = import.meta.env.BASE_URL.replace(/\/$/, '');
+---
+<Base>
+<section class="hero" data-hero>
+  <div class="wrap hin">
+    <div class="idrow"><img src={`${b}/media/onur.webp`} alt="Portrait of Onur Kansoy" width="620" height="598"><h1>Onur Kansoy</h1></div>
+    <div class="hgrid">
+      <div class="intro">
+        <p class="big">I put learning agents in small worlds and study what they invent, and what they fail to invent.</p>
+        <p>I am a final-semester computer engineering student at <a href="https://en.iyte.edu.tr/">Izmir Institute of Technology</a> and an undergraduate researcher at its <a href="https://dbb.iyte.edu.tr/site_en.html">Digital Humanities and Artificial Intelligence Laboratory</a>. My interests are multi-agent reinforcement learning, emergent behaviour, social dilemmas and game RL. I plan to start an MS at <a href="https://ceng.metu.edu.tr/">METU</a> in spring 2027.</p>
+        <div class="cta"><a class="btn" href={`${b}/research/`}>Research</a><a class="btn" href={`${b}/cv/`}>CV</a><a class="btn" href="https://github.com/Anka256">GitHub</a></div>
+      </div>
+      <div class="live"><span class="kicker">Live: trained hider and seeker</span><HnsReplay note={false} /></div>
+    </div>
+  </div>
+</section>
+
+<section class="worlds wrap">
+  <div class="stick"><div class="arena"><canvas id="world" aria-label="Animated model of the selected project"></canvas><canvas id="ghost" aria-hidden="true"></canvas></div><div class="met" id="whud"></div><p class="note" id="wnote"></p></div>
+  <div>
+    <article class="ep" data-m="hunter"><span class="kicker">Ongoing · CENG567</span><h2>Hunter-Gatherer Survival</h2><p>A finite MDP I designed for the graduate reinforcement learning course: 30 days, three locations, risky hunts, injuries and night danger. It grows with each assignment, and multi-agent experiments are next.</p><a href={`${b}/research/hunter-gatherer/`}>Play it in your browser →</a></article>
+    <article class="ep" data-m="zebra"><span class="kicker">Senior thesis · <a href="https://tubitak.gov.tr/tr/burslar/lisans/burs-programlari/icerik-2209-a-universite-ogrencileri-arastirma-projeleri-destekleme-programi">TÜBİTAK 2209-A</a></span><h2>Smart Zebra</h2><p>Teaching a 3B language model to solve logic-grid puzzles with SFT and GRPO, using a prompt that follows AC-3 constraint propagation. Puzzle accuracy on small instances rose from 18.75% to 66.56%.</p><a href={`${b}/research/smart-zebra/`}>Read about it →</a></article>
+    <article class="ep" data-m="rec"><span class="kicker">Personal experiment · SocialJax fork</span><h2>Recognition</h2><p>A small environment I added to a fork of SocialJax, where agents earn reward only by being recognised by others.</p><a href={`${b}/research/#recognition`}>See the note →</a></article>
+    <article class="ep" data-m="hide"><span class="kicker">Paused · self-play</span><h2>Hide and Seek</h2><p>A 1v1 physics environment with my own recurrent PPO. The hider learned to stay out of sight 87% of the time. I paused the project before the seeker caught up, and I would like to return to it.</p><a href={`${b}/research/hide-and-seek/`}>Explore the replays →</a></article>
+  </div>
+</section>
+
+<section class="wrap section now">
+  <div class="tri">
+    <div class="rv"><span class="kicker">Laboratory · Feb 2026 to present</span><h2 class="h2"><a href="https://dbb.iyte.edu.tr/site_en.html">Digital Humanities and Artificial Intelligence Laboratory</a></h2><p>As an undergraduate researcher at IZTECH, I annotated and classified 257 Ottoman Turkish documents, using an AI-assisted workflow to speed up and verify human labelling. The resulting ground-truth dataset supports fine-tuning of domain-specific language models.</p><p style="margin-top:8px"><a class="mono" style="font-size:14px" href={`${b}/research/#lab`}>More →</a></p></div>
+    <div class="rv"><span class="kicker">This term</span><h2 class="h2">Courses</h2><ul class="clist">{courses.current.map((c) => <li><span class="mono">{c.code}</span> {c.name}{c.note && <em> · {c.note}</em>}</li>)}</ul></div>
+    <div class="rv"><span class="kicker">Beyond research</span><h2 class="h2">Tools and games</h2><p>I build agent systems and tools, and I make games. Crossblocks is on Google Play.</p><div class="cta"><a class="btn" href={`${b}/projects/`}>Projects</a><a class="btn" href={`${b}/games/`}>Games</a></div></div>
+  </div>
+</section>
+</Base>
+<style is:global>
+.hero{position:relative;overflow:hidden;border-bottom:2px solid var(--wall)}
+.hin{padding-block:40px 40px}
+.hero h1{font-size:clamp(44px,7.4vw,96px);line-height:1.04;letter-spacing:-.035em}
+.idrow{display:flex;align-items:center;gap:clamp(16px,2.4vw,30px)}.idrow img{width:clamp(92px,11vw,150px);height:clamp(92px,11vw,150px);object-fit:cover;object-position:50% 25%;border:2px solid var(--wall);flex:none}
+.hgrid{display:grid;grid-template-columns:minmax(0,1.05fr) minmax(0,.95fr);gap:44px;margin-top:22px;align-items:start}
+.intro{display:flex;flex-direction:column;gap:16px;min-width:0}.intro .big{font-size:clamp(21px,2.2vw,27px);line-height:1.28;letter-spacing:-.012em;font-weight:600;max-width:24em}.intro p:not(.big){max-width:58ch}
+.cta{display:flex;gap:8px;flex-wrap:wrap;margin-top:6px}.cta .btn{font-size:14px;padding:8px 13px;background:var(--bg)}
+.live{min-width:0}.live .kicker{display:block;margin-bottom:6px}
+.worlds{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:48px;padding-block:30px}
+.stick{position:sticky;top:calc(var(--navh,100px) + 16px);align-self:start;min-width:0}.stick canvas{width:100%;aspect-ratio:1;max-height:calc(100svh - var(--navh,100px) - 120px)}
+#ghost{position:absolute;inset:0;width:100%;height:100%;pointer-events:none;opacity:0}
+.ep{min-height:74svh;display:flex;flex-direction:column;justify-content:center;gap:10px;border-bottom:1px solid var(--line);min-width:0}.ep:last-child{border:0}
+.ep h2{font-size:clamp(28px,3.4vw,40px);letter-spacing:-.025em}.ep p{max-width:50ch}.ep a{font:14px var(--mono)}
+.tri{display:grid;grid-template-columns:1.2fr 1fr 1fr;gap:36px;border-top:2px solid var(--wall);padding-top:24px}.tri>div{min-width:0}.tri .h2{margin-top:6px}
+@media(max-width:860px){.tri{grid-template-columns:minmax(0,1fr)}}
+.clist{list-style:none;padding:0;margin:0;display:grid;gap:8px}.clist em{color:var(--mut);font-style:normal}
+@media(max-width:860px){.hgrid,.worlds{grid-template-columns:minmax(0,1fr);gap:18px}.stick{top:calc(var(--navh,100px) + 6px);z-index:4;background:var(--bg);padding-bottom:6px}.stick canvas{aspect-ratio:auto;height:34svh;max-height:none}.ep{min-height:56svh}}
+</style>
+<script>
+import { fit, RecWorld, HunterEnv, careful, drawHunter, drawZebra, ZEBRA, HnsPlayer, reduce, metrics, hnsMetrics, hunterMetrics } from '../scripts/sims';
+let cleanup: (() => void)[] = [];
+document.addEventListener('astro:page-load', async () => {
+  const hero = document.querySelector<HTMLElement>('[data-hero]'); if (!hero) return;
+  const cv = document.getElementById('world') as HTMLCanvasElement, hud = document.getElementById('whud')!, note = document.getElementById('wnote')!;
+  let mode = 'hunter', f = fit(cv); const rec = new RecWorld(), hg = new HunterEnv().reset(), pos = { x: .5, y: .74 };
+  let last = 0, gone = new Set<string>(), zi = 0, zt = 0, raf = 0; let hp: HnsPlayer | null = null;
+  let d: any;
+  try { d = await (await fetch(import.meta.env.BASE_URL.replace(/\/$/, '') + '/data/hns.json')).json(); } catch { return; }
+  if (!cv.isConnected) return;
+  const ro = new ResizeObserver(() => { f = fit(cv); hp?.resize(); hp?.draw(); if (reduce()) still(); }); ro.observe(cv);
+  const notes: Record<string, string> = { hunter: 'The real environment rules, played here by the scripted careful policy from my report.', zebra: 'The AC-3 worked example from the paper appendix.', rec: 'A live simplified sketch of the K update. Red agents start famous.', hide: 'Real rollout of the trained policies.' };
+  const ghost = document.getElementById('ghost') as HTMLCanvasElement;
+  const fade = () => { if (reduce()) return; ghost.width = cv.width; ghost.height = cv.height; ghost.getContext('2d')!.drawImage(cv, 0, 0); ghost.getAnimations().forEach((a) => a.cancel()); ghost.animate([{ opacity: 1 }, { opacity: 0 }], { duration: 900, easing: 'cubic-bezier(.4,0,.2,1)' }); };
+  const set = (m: string) => { if (m === mode) return; fade(); mode = m; note.textContent = notes[m]; if (m === 'hide') { hp = hp || new HnsPlayer(cv, d); hp.ep = 9; hp.playing = true; hp.onTick = (q) => metrics(hud, hnsMetrics(q)); } else if (hp) { hp.destroy(); hp = null; f = fit(cv); } if (reduce()) still(); };
+  note.textContent = notes.hunter;
+  const io = new IntersectionObserver((es) => es.forEach((e) => e.isIntersecting && set((e.target as HTMLElement).dataset.m!)), { rootMargin: '-45% 0px -45% 0px' });
+  document.querySelectorAll('.ep').forEach((e) => io.observe(e));
+  const still = () => { if (mode === 'hunter') drawHunter(f.g, f.W, f.H, hg, { x: .5, y: .74 }, 0); if (mode === 'rec') { for (let i = 0; i < 300; i++) rec.step(); rec.draw(f.g, f.W, f.H); } if (mode === 'zebra') { ZEBRA.steps.forEach((s) => s.rm.forEach((x) => gone.add(x))); drawZebra(f.g, f.W, f.H, gone); } };
+  const step = (t: number) => {
+    raf = requestAnimationFrame(step); const r = cv.getBoundingClientRect(); if (r.bottom < 0 || r.top > innerHeight) return;
+    if (mode === 'hunter') { if (t - last > 240) { last = t; if (hg.done) hg.reset(); hg.step(careful(hg)); metrics(hud, hunterMetrics(hg)); } drawHunter(f.g, f.W, f.H, hg, pos, t); }
+    if (mode === 'rec') { rec.step(); rec.step(); rec.draw(f.g, f.W, f.H); metrics(hud, rec.metrics()); }
+    if (mode === 'zebra') { zt++; if (zt % 110 === 0) { if (zi < ZEBRA.steps.length) { ZEBRA.steps[zi].rm.forEach((x) => gone.add(x)); zi++; } else { zi = 0; gone = new Set(); } } drawZebra(f.g, f.W, f.H, gone); metrics(hud, [['Step', `${zi}/${ZEBRA.steps.length}`], ['Removed', `${gone.size}/12`]]); note.textContent = zi ? ZEBRA.steps[zi - 1].say : notes.zebra; }
+  };
+  if (!reduce()) raf = requestAnimationFrame(step); else still();
+  cleanup.push(() => { cancelAnimationFrame(raf); ro.disconnect(); io.disconnect(); hp?.destroy(); });
+});
+document.addEventListener('astro:before-swap', () => { cleanup.forEach((f) => f()); cleanup = []; });
+</script>

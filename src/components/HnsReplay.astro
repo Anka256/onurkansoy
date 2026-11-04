@@ -1,0 +1,46 @@
+---
+const { note = true } = Astro.props;
+---
+<div class="hns" data-hns>
+  <div class="arena"><canvas aria-label="Replay of a trained hider, red, and seeker, green"></canvas></div>
+  <div class="met" data-hud></div>
+  <div class="ctrl">
+    <button type="button" data-a="play">pause</button>
+    <input type="range" min="0" max="239" value="0" aria-label="Episode time" data-a="scrub">
+    <button type="button" data-a="prev" aria-label="Previous episode">◀</button>
+    <button type="button" data-a="next" aria-label="Next episode">▶</button>
+    <button type="button" data-a="cone" aria-pressed="true">vision</button>
+    <button type="button" data-a="rays" aria-pressed="true">rays</button>
+    <button type="button" data-a="fast" aria-pressed="false">2×</button>
+  </div>
+  {note && <p class="note">Real rollouts of the trained policies after 56.6M steps, recorded from the environment. Episodes range from caught early to never seen.</p>}
+</div>
+<script>
+import { HnsPlayer, hnsMetrics, metrics, type HnsData } from '../scripts/sims';
+let live: HnsPlayer[] = [];
+async function init() {
+  const hosts = document.querySelectorAll<HTMLElement>('[data-hns]'); if (!hosts.length) return;
+  let d: HnsData;
+  try { d = await (await fetch(import.meta.env.BASE_URL.replace(/\/$/, '') + '/data/hns.json')).json(); } catch { return; }
+  if (!hosts[0].isConnected) return;
+  hosts.forEach((h) => {
+    const p = new HnsPlayer(h.querySelector('canvas')!, d); live.push(p); p.ep = d.episodes.length - 3;
+    const hud = h.querySelector<HTMLElement>('[data-hud]')!, sc = h.querySelector<HTMLInputElement>('[data-a=scrub]')!, pb = h.querySelector<HTMLButtonElement>('[data-a=play]')!;
+    if (!p.playing) pb.textContent = 'play';
+    p.onTick = (q) => { sc.value = String(q.t); metrics(hud, hnsMetrics(q)); };
+    p.draw();
+    h.addEventListener('click', (e) => {
+      const b = (e.target as HTMLElement).closest<HTMLElement>('[data-a]'); if (!b) return;
+      const a = b.dataset.a;
+      if (a === 'play') { p.playing = !p.playing; pb.textContent = p.playing ? 'pause' : 'play'; }
+      if (a === 'prev') p.setEp(p.ep - 1); if (a === 'next') p.setEp(p.ep + 1);
+      if (a === 'cone') { p.showCone = !p.showCone; b.setAttribute('aria-pressed', String(p.showCone)); p.draw(); }
+      if (a === 'rays') { p.showRays = !p.showRays; b.setAttribute('aria-pressed', String(p.showRays)); p.draw(); }
+      if (a === 'fast') { p.speed = p.speed === 1 ? 2 : 1; b.setAttribute('aria-pressed', String(p.speed === 2)); }
+    });
+    sc.addEventListener('input', () => { p.t = +sc.value; p.draw(); });
+  });
+}
+document.addEventListener('astro:page-load', init);
+document.addEventListener('astro:before-swap', () => { live.forEach((p) => p.destroy()); live = []; });
+</script>

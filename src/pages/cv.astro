@@ -1,0 +1,26 @@
+---
+import Base from '../layouts/Base.astro';
+import { experience, courses } from '../data/site';
+const b = import.meta.env.BASE_URL.replace(/\/$/, '');
+---
+<Base title="CV" description="Curriculum vitae of Onur Kansoy.">
+<div class="wrap cv">
+<header><h1>Onur Kansoy</h1><p class="ct"><span>onurkansoy@std.iyte.edu.tr</span><span>onurkansoy01@gmail.com</span><span>github.com/Anka256</span><span>huggingface.co/TheArchitect256</span><span>linkedin.com/in/onurkansoy</span></p><a class="btn noprint" href={`${b}/onur-kansoy-cv.pdf`}>Download PDF</a></header>
+<h2>Research interests</h2><p>Multi-agent reinforcement learning, emergent behaviour, social dilemmas, opponent modelling, game RL.</p>
+<h2>Education</h2><div class="r"><b>B.Sc. in Computer Engineering, <a href="https://en.iyte.edu.tr/">Izmir Institute of Technology</a></b><span>Sep 2021 to Jan 2027 (expected)</span></div><p>CGPA 3.10 / 4.00. Term GPA 3.25 to 3.40 across the last four completed terms.</p>
+<h2>Research</h2>
+<div class="r"><b>Smart Zebra: A Prompt-to-GRPO Recipe for Logic-Grid Reasoning in Small Language Models</b><span>2025 to 2026</span></div><p>First author, with Emre Ertürk. Advisor: <a href="https://selmatekir.github.io">Assoc. Prof. Selma Tekir</a>. Senior thesis, funded by <a href="https://tubitak.gov.tr/tr/burslar/lisans/burs-programlari/icerik-2209-a-universite-ogrencileri-arastirma-projeleri-destekleme-programi">TÜBİTAK 2209-A</a>. Manuscript in revision. SFT and GRPO pipeline on Qwen2.5-3B-Instruct, and a reimplementation of the ZebraLogic generator with Z3.</p>
+<div class="r"><b>Hunter-Gatherer Survival</b><span>Oct 2026 to present</span></div><p>Custom finite MDP and Gymnasium environment for CENG567, with multi-agent experiments in progress.</p>
+<div class="r"><b>Hide and Seek</b><span>Sep 2026, paused</span></div><p>1v1 continuous self-play environment with custom recurrent PPO and an asymmetric critic, 56.6M training steps.</p>
+<h2>Experience</h2>{experience.map(e=><><div class="r"><b>{e.role}, <a href={e.url}>{e.org}</a></b><span>{e.when}</span></div><p>{e.text}</p></>)}
+<h2>Selected coursework</h2><p>{courses.current.map(c=>`${c.name} (${c.code}, in progress)`).join(', ')}, {courses.done.map(c=>c.grade?`${c.name} (${c.grade})`:c.name).join(', ')}.</p>
+<h2>Skills</h2><p><b>Languages:</b> Python, JavaScript/TypeScript, GDScript, SQL. <b>ML:</b> PyTorch, Gymnasium, PettingZoo, TRL, PEFT, Unsloth, vLLM. <b>Agents:</b> LangGraph, LangChain, OpenAI Agents SDK. <b>Systems:</b> FastAPI, PostgreSQL, pgvector, Docker, Linux. <b>Other:</b> Godot, React Native, LaTeX.</p>
+<h2>Games</h2><p>Crossblocks (Google Play), Bounce In (testing), Circle In (in development). 2nd prize, Kuleizmir Game Hackathon (2021). Jamination 5 and HoBI'22 game jams (2022). IZTECH DuckJam (2025). Hugging Face Build Small Hackathon (2026).</p>
+<h2>Leadership</h2><p>Iztech Bridge Society, former president and current board member. Iztech Neuroscience Society, former board member.</p>
+<h2>Languages</h2><p>Turkish (native), English (B2), Italian (beginner).</p>
+</div>
+</Base>
+<style is:global>.cv{max-width:860px;padding-block:44px}.cv h1{font-size:clamp(38px,6vw,56px)}.cv header{display:flex;flex-direction:column;gap:6px;align-items:flex-start}.cv h2{font-size:20px;letter-spacing:-.01em;margin:26px 0 6px;padding-bottom:4px;border-bottom:2px solid var(--wall)}.cv .r{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:2px 18px;margin-top:8px;align-items:baseline}.cv .r span{font:12.5px var(--mono);color:var(--mut);white-space:nowrap;text-align:right}.cv p{font-size:15.5px;line-height:1.5}
+.cv .ct span:not(:last-child)::after{content:" · "}
+@media screen and (max-width:700px){.cv{padding-block:30px 40px}.cv header{gap:10px}.cv .ct span{display:block;line-height:1.7}.cv .ct span::after{content:none!important}.cv h2{font-size:22px;margin:38px 0 12px;padding-bottom:7px}.cv .r{grid-template-columns:minmax(0,1fr);gap:3px;margin-top:20px}.cv .r span{text-align:left;white-space:normal}.cv .r b{line-height:1.35}.cv p{font-size:16.5px;line-height:1.62;margin-top:7px}}
+@media print{.nav,.foot,.noprint{display:none!important}body{background:#fff;color:#111;font-size:12px}.cv{padding:0;max-width:none}.cv h2{margin-top:12px;font-size:14px;break-after:avoid}.cv p{font-size:11.5px;line-height:1.38}.cv h1{font-size:28px}}</style>

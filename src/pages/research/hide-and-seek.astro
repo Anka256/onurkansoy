@@ -1,0 +1,21 @@
+---
+import Base from '../../layouts/Base.astro';
+import HnsReplay from '../../components/HnsReplay.astro';
+---
+<Base title="Hide and Seek" description="A 1v1 hide-and-seek environment with recurrent PPO self-play.">
+<div class="wrap pagehead"><span class="tag pause">Paused, unfinished</span><h1 >Hide and Seek</h1><p class="lead">A small 2D version of <a href="https://arxiv.org/abs/1909.07528">OpenAI's hide-and-seek setting</a>, built and trained from scratch on a laptop GPU in September 2026.</p></div>
+<div class="wrap grid2">
+ <div class="rv"><HnsReplay /></div>
+ <div class="prose rv"><h2 class="h2">What happened</h2>
+  <div class="stats"><div><b data-count="56.6" data-suf="M">56.6M</b><span>self-play steps</span></div><div><b data-count="86.7" data-suf="%">86.7%</b><span>of seek-phase steps unseen, over 300 evaluation episodes</span></div><div><b data-count="25" data-suf="%">25%</b><span>of late training episodes end with the hider sealed off</span></div></div>
+  <p>The hider moved into the room in about 96% of late training episodes and locked a box in many of them. By my reachability metric it was fully sealed off in about a quarter of episodes.</p>
+  <p>The seeker did not answer. It rarely touched boxes, with a grab rate under 1%, so training never reached the back-and-forth arms race of the original work. The hider won, and the curriculum stopped there. That is where I paused.</p>
+  <p>Next I would test seeker exploration incentives, longer training and more agents.</p></div>
+</div>
+<div class="wrap section"><h2 class="h2 rv">Behaviour in late training</h2><p class="prose rv" style="margin-bottom:12px">Averages over the last 30 training iterations of the final run, per episode.</p><div class="tw rv"><table class="tbl" style="min-width:0"><thead><tr><th>Measure</th><th>End of prep</th><th>End of episode</th></tr></thead><tbody><tr><td>Hider inside the room</td><td>85%</td><td>96%</td></tr><tr><td>Hider sealed off from the seeker</td><td>19%</td><td>25%</td></tr><tr><td>Boxes locked, out of 2</td><td>0.33</td><td>0.72</td></tr></tbody></table></div><div class="tw rv" style="margin-top:18px"><table class="tbl" style="min-width:0"><thead><tr><th>Measure</th><th>Hider</th><th>Seeker</th></tr></thead><tbody><tr><td>Share of steps grabbing a box</td><td>12.3%</td><td>0.7%</td></tr><tr><td>Locks per episode</td><td>2.23</td><td>0.17</td></tr><tr><td>Unlocks per episode</td><td>1.61</td><td>0.07</td></tr></tbody></table></div></div>
+<div class="wrap section"><hr class="rule"><div class="grid2" style="margin-top:28px">
+ <div class="rv"><h2 class="h2">Environment</h2><ul class="dl"><li>Continuous 2D physics in pymunk, PettingZoo <code>ParallelEnv</code></li><li>14 × 14 m arena, random room, doors and walls in every episode</li><li>240 steps, the first 96 are preparation with a frozen seeker</li><li>Hidden means outside the seeker's 135° vision cone or line of sight</li><li>16-ray lidar plus masked observations of the opponent and boxes</li><li>Actions: force, torque, grab, lock</li></ul></div>
+ <div class="rv"><h2 class="h2">Training</h2><ul class="dl"><li>My own PPO in PyTorch, two separate networks trained at once</li><li>LSTM in actor and critic, truncated BPTT over 16-step chunks</li><li>Asymmetric critic that sees the unmasked state during training</li><li>Two-stage curriculum: static boxes, then movable boxes</li><li>Stage switch by plateau, at 17.1M steps in this run</li><li>Tests for rewards, line of sight and vector environments</li></ul></div>
+</div></div>
+</Base>
+<style is:global>.dl{padding-left:18px;margin:0}.dl li{margin-block:6px}code{font:.88em var(--mono)}</style>

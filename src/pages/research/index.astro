@@ -1,0 +1,35 @@
+---
+import Base from '../../layouts/Base.astro';
+const b = import.meta.env.BASE_URL.replace(/\/$/, '');
+const cards = [
+ { href:'/research/hunter-gatherer', tag:'Ongoing', cls:'live', title:'Hunter-Gatherer Survival', when:'Oct 2026 to present', text:'A finite MDP built for CENG567 and growing with each assignment. Multi-agent experiments are the next stage.' },
+ { href:'/research/smart-zebra', tag:'Manuscript in revision', cls:'work', title:'Smart Zebra', when:'2025 to 2026', text:'A prompt-to-GRPO recipe for logic-grid reasoning in small language models. Senior thesis, TÜBİTAK 2209-A.' },
+ { href:'/research/hide-and-seek', tag:'Paused', cls:'pause', title:'Hide and Seek', when:'Sep 2026', text:'A 1v1 self-play environment with recurrent PPO, inspired by OpenAI. Unfinished, with real replays.' },
+];
+---
+<Base title="Research" description="Research interests and work of Onur Kansoy in multi-agent reinforcement learning.">
+<div class="wrap pagehead"><span class="kicker">Research</span><h1 >How agents learn around each other</h1><p class="lead">I want to understand what happens when learners share a world: how cooperation and betrayal appear, and how agents model each other.</p></div>
+<div class="wrap section" style="padding-top:10px"><hr class="rule"><div class="rgrid">
+ <div class="rv"><h2 class="h2">Interests</h2><ul class="ilist"><li>Multi-agent reinforcement learning</li><li>Emergent behaviour and communication</li><li>Cooperation, defection and opponent modelling</li><li>Social dilemmas</li><li>Agent societies and social simulation</li><li>Game RL and agents that play with people</li></ul></div>
+ <div class="rv prose"><h2 class="h2">Why this</h2><p><a href="https://arxiv.org/abs/1909.07528">OpenAI's hide-and-seek work</a> showed me that agents can find strategies nobody wrote down, and that moved me toward reinforcement learning.</p><p>I am working through <a href="http://incompleteideas.net/book/the-book-2nd.html">Sutton and Barto</a> and taking <a href="https://ceng.iyte.edu.tr/?p=11940">Dr. Alper Demir</a>'s graduate reinforcement learning course this term. My hands-on RL experience is recent, and my LLM post-training experience is deeper. I want the MS years to build rigorous foundations in multi-agent learning.</p></div>
+</div></div>
+<div class="wrap section" id="lab" style="padding-top:0"><hr class="rule"><div class="grid2" style="margin-top:26px"><div class="rv"><span class="kicker">Current position · Feb 2026 to present</span><h2 class="h2" style="margin-top:6px"><a href="https://dbb.iyte.edu.tr/site_en.html">Digital Humanities and Artificial Intelligence Laboratory</a></h2><p>Undergraduate Researcher, <a href="https://en.iyte.edu.tr/">Izmir Institute of Technology</a></p></div><div class="prose rv"><p>I annotated and classified 257 Ottoman Turkish documents, using an AI-assisted workflow to speed up and verify the human labelling process.</p><p>This work produced a high-quality ground-truth dataset for supervised fine-tuning of domain-specific language models, with the goal of releasing the final models openly on Hugging Face.</p></div></div></div>
+<div class="wrap section"><h2 class="h2 rv">Work</h2><div class="wcards">{cards.map(c=><a class="wcard rv" href={`${b}${c.href}/`}><span class={`tag ${c.cls}`}>{c.tag}</span><h3>{c.title}</h3><span class="kicker">{c.when}</span><p>{c.text}</p></a>)}</div></div>
+<div class="wrap section" id="recognition"><hr class="rule"><div class="grid2" style="margin-top:28px">
+ <div class="rv"><span class="kicker">Personal experiment · Oct 2026</span><h2 class="h2" style="margin-top:8px">Recognition</h2><div class="prose"><p>A very small experiment built on <a href="https://github.com/cooperativex/SocialJax">SocialJax</a>, an open-source suite of sequential social dilemma environments by its own authors. I forked it as my base and added one new environment, where agents earn reward only by being recognised by others, together with a trainer, plots and tests.</p><p>Recognition is directed, so one agent can know another without being known back. It fades when agents stop seeing each other, and a slower memory makes it quicker to rebuild.</p><p>I expected well-known agents to pull further ahead. In my short runs, early advantages faded instead. It stayed a small test, and I may return to it.</p></div><div class="tw" style="margin-top:14px"><table class="tbl" style="min-width:0"><thead><tr><th>3 seeds, 10 agents</th><th>Return</th><th>Status Gini</th></tr></thead><tbody><tr><td>Reward on change, individual</td><td>5.85</td><td>0.05</td></tr><tr><td>Reward on change, shared</td><td>7.42</td><td>0.04</td></tr><tr><td>Reward on level, individual</td><td>63.4</td><td>0.09</td></tr><tr><td>Reward on level, shared mean</td><td>64.7</td><td>0.08</td></tr></tbody></table></div><p style="margin-top:10px"><a class="mono" style="font-size:14px" href="https://github.com/Anka256/SocialJax/tree/recognition">My fork on GitHub →</a></p></div>
+ <div class="rv"><div class="arena"><canvas id="rec" aria-label="Sketch of ten agents forming recognition links"></canvas></div><div class="met" id="rhud"></div><p class="note">Simplified live sketch of the update rule, for illustration. Red agents start famous.</p></div>
+</div></div>
+</Base>
+<style is:global>
+.rgrid{display:grid;grid-template-columns:minmax(0,.8fr) minmax(0,1.2fr);gap:44px;margin-top:28px}.ilist{list-style:none;margin:0;padding:0;font-size:19px}.ilist li{padding-block:8px;border-bottom:1px solid var(--line)}
+.wcards{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:16px}.wcard{background:var(--panel);border:2px solid var(--wall);padding:20px;text-decoration:none;display:flex;flex-direction:column;gap:8px;align-items:flex-start;transition:transform .25s,box-shadow .25s;min-width:0}.wcard:hover{transform:translate(-3px,-3px);box-shadow:6px 6px 0 var(--wall);color:inherit}.wcard h3{font-size:27px}
+#rec{width:100%;aspect-ratio:1}
+@media(max-width:860px){.rgrid,.wcards{grid-template-columns:minmax(0,1fr);gap:18px}}
+</style>
+<script>
+import { RecWorld, fit, reduce, metrics } from '../../scripts/sims';
+let raf=0;
+document.addEventListener('astro:page-load',()=>{const c=document.getElementById('rec') as HTMLCanvasElement;if(!c)return;let f=fit(c);const w=new RecWorld(),h=document.getElementById('rhud')!;new ResizeObserver(()=>f=fit(c)).observe(c);
+const l=()=>{raf=requestAnimationFrame(l);w.step();w.step();w.draw(f.g,f.W,f.H);metrics(h,w.metrics())};if(reduce()){for(let i=0;i<300;i++)w.step();w.draw(f.g,f.W,f.H);metrics(h,w.metrics())}else l()});
+document.addEventListener('astro:before-swap',()=>cancelAnimationFrame(raf));
+</script>
