@@ -75,7 +75,8 @@ document.addEventListener('astro:page-load', async () => {
   const set = (m: string) => { if (m === mode) return; fade(); mode = m; note.textContent = notes[m]; if (hp) hp.off = m !== 'hide'; if (m === 'hide') { if (!hp) { hp = new HnsPlayer(cv, d); hp.ep = 9; hp.onTick = (q) => metrics(hud, hnsMetrics(q), true); } hp.draw(); } if (reduce()) still(); };
   note.textContent = notes.hunter;
   const eps = [...document.querySelectorAll<HTMLElement>('.ep')]; let want = mode, timer = 0, queued = false;
-  const pick = () => { queued = false; const c = innerHeight / 2; let best = want, gap = 1e9; eps.forEach((e) => { const r = e.getBoundingClientRect(), x = Math.abs((r.top + r.bottom) / 2 - c); if (x < gap) { gap = x; best = e.dataset.m!; } }); if (best !== want) { want = best; clearTimeout(timer); timer = window.setTimeout(() => set(want), 110); } };
+  const stick = document.querySelector<HTMLElement>('.stick')!;
+  const pick = () => { queued = false; const stacked = innerWidth <= 860, bottom = stick.getBoundingClientRect().bottom, line = stacked ? bottom + (innerHeight - bottom) * 0.4 : innerHeight * 0.5; let best = eps[0].dataset.m!; eps.forEach((e) => { if (e.getBoundingClientRect().top <= line) best = e.dataset.m!; }); if (best !== want) { want = best; clearTimeout(timer); timer = window.setTimeout(() => set(want), 50); } };
   const onScroll = () => { if (!queued) { queued = true; requestAnimationFrame(pick); } };
   addEventListener('scroll', onScroll, { passive: true });
   const still = () => { if (mode === 'hunter') drawHunter(f.g, f.W, f.H, hg, { x: .5, y: .74 }, 0); if (mode === 'rec') { for (let i = 0; i < 300; i++) rec.step(); rec.draw(f.g, f.W, f.H); } if (mode === 'zebra') { ZEBRA.steps.forEach((s) => s.rm.forEach((x) => gone.add(x))); drawZebra(f.g, f.W, f.H, gone); } };
