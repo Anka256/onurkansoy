@@ -46,8 +46,9 @@ const b = import.meta.env.BASE_URL.replace(/\/$/, '');
 .intro{display:flex;flex-direction:column;gap:16px;min-width:0}.intro .big{font-size:clamp(21px,2.2vw,27px);line-height:1.28;letter-spacing:-.012em;font-weight:600;max-width:24em}.intro p:not(.big){max-width:58ch}
 .cta{display:flex;gap:8px;flex-wrap:wrap;margin-top:6px}.cta .btn{font-size:14px;padding:8px 13px;background:var(--bg)}
 .live{min-width:0}.live .kicker{display:block;margin-bottom:6px}
-.worlds{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:48px;padding-block:30px}
+.worlds{overflow-anchor:none;display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:48px;padding-block:30px}
 .stick{position:sticky;top:calc(var(--navh,100px) + 16px);align-self:start;min-width:0}.stick canvas{width:100%;aspect-ratio:1;max-height:calc(100svh - var(--navh,100px) - 120px)}
+.stick .note{min-height:5.8em}.stick .met{min-height:74px;align-content:start}.stick .arena{contain:paint}
 #ghost{position:absolute;inset:0;width:100%;height:100%;pointer-events:none;opacity:0}
 .ep{min-height:60svh;display:flex;flex-direction:column;justify-content:center;gap:10px;border-bottom:1px solid var(--line);min-width:0}.ep:last-child{border:0}
 .ep h2{font-size:clamp(28px,3.4vw,40px);letter-spacing:-.025em}.ep p{max-width:50ch}.ep a{font:14px var(--mono)}
@@ -71,19 +72,21 @@ document.addEventListener('astro:page-load', async () => {
   const notes: Record<string, string> = { hunter: 'The real environment rules, played here by the scripted careful policy from my report.', zebra: 'Clues: ' + ZEBRA.clues.map((c, i) => `(${i + 1}) ${c}`).join(' '), rec: 'A live simplified sketch of the K update. Red agents start famous.', hide: 'Real rollout of the trained policies.' };
   const ghost = document.getElementById('ghost') as HTMLCanvasElement;
   const fade = () => { if (reduce()) return; ghost.width = cv.width; ghost.height = cv.height; ghost.getContext('2d')!.drawImage(cv, 0, 0); ghost.getAnimations().forEach((a) => a.cancel()); ghost.animate([{ opacity: 1 }, { opacity: 0 }], { duration: 900, easing: 'cubic-bezier(.4,0,.2,1)' }); };
-  const set = (m: string) => { if (m === mode) return; fade(); mode = m; note.textContent = notes[m]; if (m === 'hide') { hp = hp || new HnsPlayer(cv, d); hp.ep = 9; hp.playing = true; hp.onTick = (q) => metrics(hud, hnsMetrics(q)); } else if (hp) { hp.destroy(); hp = null; f = fit(cv); } if (reduce()) still(); };
+  const set = (m: string) => { if (m === mode) return; fade(); mode = m; note.textContent = notes[m]; if (hp) hp.off = m !== 'hide'; if (m === 'hide') { if (!hp) { hp = new HnsPlayer(cv, d); hp.ep = 9; hp.onTick = (q) => metrics(hud, hnsMetrics(q), true); } hp.draw(); } if (reduce()) still(); };
   note.textContent = notes.hunter;
-  const io = new IntersectionObserver((es) => es.forEach((e) => e.isIntersecting && set((e.target as HTMLElement).dataset.m!)), { rootMargin: '-45% 0px -45% 0px' });
-  document.querySelectorAll('.ep').forEach((e) => io.observe(e));
+  const eps = [...document.querySelectorAll<HTMLElement>('.ep')]; let want = mode, timer = 0, queued = false;
+  const pick = () => { queued = false; const c = innerHeight / 2; let best = want, gap = 1e9; eps.forEach((e) => { const r = e.getBoundingClientRect(), x = Math.abs((r.top + r.bottom) / 2 - c); if (x < gap) { gap = x; best = e.dataset.m!; } }); if (best !== want) { want = best; clearTimeout(timer); timer = window.setTimeout(() => set(want), 110); } };
+  const onScroll = () => { if (!queued) { queued = true; requestAnimationFrame(pick); } };
+  addEventListener('scroll', onScroll, { passive: true });
   const still = () => { if (mode === 'hunter') drawHunter(f.g, f.W, f.H, hg, { x: .5, y: .74 }, 0); if (mode === 'rec') { for (let i = 0; i < 300; i++) rec.step(); rec.draw(f.g, f.W, f.H); } if (mode === 'zebra') { ZEBRA.steps.forEach((s) => s.rm.forEach((x) => gone.add(x))); drawZebra(f.g, f.W, f.H, gone); } };
   const step = (t: number) => {
     raf = requestAnimationFrame(step); const r = cv.getBoundingClientRect(); if (r.bottom < 0 || r.top > innerHeight) return;
-    if (mode === 'hunter') { if (t - last > 240) { last = t; if (hg.done) hg.reset(); hg.step(careful(hg)); metrics(hud, hunterMetrics(hg)); } drawHunter(f.g, f.W, f.H, hg, pos, t); }
-    if (mode === 'rec') { rec.step(); rec.step(); rec.draw(f.g, f.W, f.H); metrics(hud, rec.metrics()); }
+    if (mode === 'hunter') { if (t - last > 240) { last = t; if (hg.done) hg.reset(); hg.step(careful(hg)); metrics(hud, hunterMetrics(hg), true); } drawHunter(f.g, f.W, f.H, hg, pos, t); }
+    if (mode === 'rec') { rec.step(); rec.step(); rec.draw(f.g, f.W, f.H); metrics(hud, rec.metrics(), true); }
     if (mode === 'zebra') { zt++; if (zt % 110 === 0) { if (zi < ZEBRA.steps.length) { ZEBRA.steps[zi].rm.forEach((x) => gone.add(x)); zi++; } else { zi = 0; gone = new Set(); } } drawZebra(f.g, f.W, f.H, gone); metrics(hud, [['Step', `${zi}/${ZEBRA.steps.length}`], ['Removed', `${gone.size}/12`]]); note.textContent = zi ? ZEBRA.steps[zi - 1].say : notes.zebra; }
   };
   if (!reduce()) raf = requestAnimationFrame(step); else still();
-  cleanup.push(() => { cancelAnimationFrame(raf); ro.disconnect(); io.disconnect(); hp?.destroy(); });
+  cleanup.push(() => { cancelAnimationFrame(raf); ro.disconnect(); removeEventListener('scroll', onScroll); clearTimeout(timer); hp?.destroy(); });
 });
 document.addEventListener('astro:before-swap', () => { cleanup.forEach((f) => f()); cleanup = []; });
 </script>

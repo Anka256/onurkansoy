@@ -28,7 +28,7 @@ async function init() {
     const p = new HnsPlayer(h.querySelector('canvas')!, d); live.push(p); p.ep = d.episodes.length - 3;
     const hud = h.querySelector<HTMLElement>('[data-hud]')!, sc = h.querySelector<HTMLInputElement>('[data-a=scrub]')!, pb = h.querySelector<HTMLButtonElement>('[data-a=play]')!;
     if (!p.playing) pb.textContent = 'play';
-    p.onTick = (q) => { sc.value = String(q.t); metrics(hud, hnsMetrics(q)); };
+    p.onTick = (q) => { sc.value = String(q.t); metrics(hud, hnsMetrics(q), q.playing); };
     p.draw();
     h.addEventListener('click', (e) => {
       const b = (e.target as HTMLElement).closest<HTMLElement>('[data-a]'); if (!b) return;

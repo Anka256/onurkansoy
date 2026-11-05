@@ -6,7 +6,11 @@ const clamp = (v: number, a: number, b: number) => Math.max(a, Math.min(b, v));
 
 const shown = new WeakMap<HTMLElement, string>();
 /** Writes a labelled grid of live values, touching the DOM only when something changed. */
-export function metrics(el: HTMLElement, pairs: [string, string | number][]) {
+const stamp = new WeakMap<HTMLElement, number>();
+export function metrics(el: HTMLElement, pairs: [string, string | number][], live = false) {
+  const now = performance.now();
+  if (live && now - (stamp.get(el) ?? 0) < 130) return;
+  stamp.set(el, now);
   const html = pairs.map(([k, v]) => `<span><i>${k}</i><b>${v}</b></span>`).join('');
   if (shown.get(el) !== html) { shown.set(el, html); el.innerHTML = html; }
 }
@@ -48,7 +52,7 @@ export interface HnsData { step: number; prep: number; arena: number; boxSize: n
 
 /** Replays a stored episode: [hx,hy,ha, sx,sy,sa, b1x,b1y,b1a,b1lock, b2x,b2y,b2a,b2lock, seen]. */
 export class HnsPlayer {
-  t = 0; ep = 0; playing = true; speed = 1; showRays = true; showCone = true; trail = true;
+  off = false; t = 0; ep = 0; playing = true; speed = 1; showRays = true; showCone = true; trail = true;
   onTick?: (p: HnsPlayer) => void;
   private acc = 0; private raf = 0; private last = 0; private vis = true; private io?: IntersectionObserver; private ro?: ResizeObserver;
   private dims = { g: null as CanvasRenderingContext2D | null, W: 0, H: 0 };
@@ -66,7 +70,7 @@ export class HnsPlayer {
   private loop(now: number) {
     this.raf = requestAnimationFrame((t) => this.loop(t));
     const dt = Math.min(60, now - this.last); this.last = now;
-    if (!this.vis) return;
+    if (!this.vis || this.off) return;
     if (this.playing) {
       this.acc += dt * this.speed;
       while (this.acc > 62) {
@@ -77,7 +81,7 @@ export class HnsPlayer {
     this.draw();
   }
   draw() {
-    const { g, W, H } = this.dims; if (!g) return;
+    const { g, W, H } = this.dims; if (!g || this.off) return;
     const e = this.episode, f = this.frame, A = this.d.arena, M = Math.min(W, H), s = M / A, ox = (W - M) / 2, oy = (H - M) / 2;
     const X = (v: number) => ox + v * s, Y = (v: number) => oy + v * s;
     const [bl, bw] = this.d.boxSize;
