@@ -2,6 +2,7 @@
 import Base from '../layouts/Base.astro';
 import { events } from '../data/site';
 import MusicCorner from '../components/MusicCorner.astro';
+import SmithCorner from '../components/SmithCorner.astro';
 const b = import.meta.env.BASE_URL.replace(/\/$/, '');
 const reading = [
   { t: 'Reinforcement Learning: An Introduction', a: 'Richard S. Sutton, Andrew G. Barto', img: 'sutton' },
@@ -21,17 +22,14 @@ const next = [
 <div class="wrap section me">
   <div class="rv mtext">
     <h2 class="h2">Away from the desk</h2>
-    <p>I am still a beginner at the piano, and a much more devoted listener than player. I spent a few years at the bridge table, chaired the Iztech Bridge Society for a while, and have since put the cards down.</p>
-    <p>At the gaming table I am a player, never the DM, and I rotate between DnD, Pathfinder and Cyberpunk. I acted at IZTECH and still go to the theatre whenever I can, interactive plays above all.</p>
-    <p>On The Matrix, I side with the machines' design. The world they built and run is the part that stays with me, and while most people leave as fans of Neo or Morpheus, I came out following Agent Smith: how he grows, and how he comes apart.</p>
+    <p>I play the piano too, still a beginner though. I played bridge for a few years, then I quit. I'm a tabletop player, usually DnD, Pathfinder and Cyberpunk, not a DM yet. I also did some acting at IZTECH, and I love watching theatre too, especially interactive theatre.</p>
+    <p>I'm a hardcore Matrix fan. I really like the order the machines built and run in there. People usually end up fans of Neo and Morpheus, I admired Agent Smith's character development and his fall.</p>
     <h3 class="sub">Memberships</h3>
     <ul class="mem"><li><b>Iztech Bridge Society</b><span>Former president, current board member</span></li><li><b>Iztech Neuroscience Society</b><span>Former board member</span></li></ul>
     <h3 class="sub">Languages</h3>
     <ul class="mem"><li><b>Turkish</b><span>Native</span></li><li><b>English</b><span>B2</span></li><li><b>Italian</b><span>Beginner</span></li></ul>
   </div>
-  <figure class="rain rv" aria-label="Interactive falling green code in the style of The Matrix">
-    <canvas id="rain"></canvas>
-  </figure>
+  <div class="rv" style="min-width:0;display:flex"><SmithCorner /></div>
 </div>
 
 <div class="wrap section"><hr class="rule"><h2 class="h2 rv" style="margin-top:26px">My best trip hop corner</h2>
@@ -50,59 +48,14 @@ const next = [
 <style is:global>
 .abt{display:grid;grid-template-columns:minmax(0,1fr) minmax(180px,300px);gap:34px;align-items:end}.abt img{width:100%;border:2px solid var(--wall)}
 .me{display:grid;grid-template-columns:minmax(0,1.1fr) minmax(0,.9fr);gap:44px;align-items:stretch}.mtext{min-width:0}
-.mtext .big{font-size:clamp(24px,2.8vw,34px);line-height:1.18;font-weight:700;letter-spacing:-.02em;margin-bottom:16px}.mtext p{max-width:58ch}
+.mtext .big{font-size:clamp(24px,2.8vw,34px);line-height:1.18;font-weight:700;letter-spacing:-.02em;margin-bottom:16px}.mtext p{max-width:58ch}.mtext p+p{margin-top:14px}
 .sub{font-size:15px;font:500 13px var(--mono);color:var(--mut);margin:30px 0 8px;letter-spacing:0}
 .mem{list-style:none;padding:0;margin:0;border-top:1px solid var(--line)}.mem li{display:flex;justify-content:space-between;gap:6px 16px;flex-wrap:wrap;padding-block:9px;border-bottom:1px solid var(--line)}.mem span{color:var(--mut)}
-.rain{position:relative;margin:0;background:#17191d;border:2px solid var(--wall);min-height:420px;overflow:hidden;min-width:0}.rain canvas{position:absolute;inset:0;width:100%;height:100%}
-.rain{cursor:crosshair}.pills{position:absolute;right:12px;bottom:12px;display:flex;gap:8px;z-index:2}.pill{font:12.5px var(--mono);padding:6px 11px;border:1px solid #6d7378;background:#17191d;color:#ecedea;cursor:pointer;border-radius:2px;display:flex;align-items:center;gap:7px}.pill::before{content:"";width:9px;height:9px;border-radius:50%;background:var(--c)}.pill.red{--c:var(--hider)}.pill.blue{--c:#3d7bd9}.pill[aria-pressed=true]{background:#ecedea;color:#17191d;border-color:#ecedea}
 .shelf{display:grid;grid-template-columns:repeat(auto-fill,minmax(210px,1fr));gap:30px 26px;margin-top:12px}
 .book{margin:0;min-width:0}.book img,.book .plain{width:100%;aspect-ratio:2/3;object-fit:cover;border:1px solid var(--line);display:block;box-shadow:0 8px 18px -10px rgba(0,0,0,.45);transition:transform .25s}.book:hover img,.book:hover .plain{transform:translateY(-4px)}
 .book .plain{background:#7a2a1d;color:#f5ead8;padding:16px 14px;display:flex;flex-direction:column;justify-content:space-between}.book .plain span{font-size:19px;font-weight:700;line-height:1.15}.book .plain small{font:12px var(--mono);opacity:.85}
 .book figcaption{margin-top:12px;font-size:15.5px;line-height:1.35}.book i{display:block;font-style:normal;font-weight:700}.book figcaption span{display:block;color:var(--mut);font-size:13px;margin-top:2px}.book em{display:block;font-style:normal;font:12px var(--mono);color:var(--mut);margin-top:3px}
 .tl{list-style:none;margin:0;padding:0;border-top:2px solid var(--wall)}.tl li{display:grid;grid-template-columns:170px minmax(0,1fr);gap:20px;padding-block:18px;border-bottom:1px solid var(--line)}.tl time{font-size:13px;color:var(--mut);padding-top:5px}.tl p{max-width:68ch;margin-top:6px}
-@media(max-width:860px){.me{grid-template-columns:minmax(0,1fr)}.rain{min-height:300px}}
+@media(max-width:860px){.me{grid-template-columns:minmax(0,1fr)}}
 @media(max-width:700px){.abt{grid-template-columns:minmax(0,1fr);gap:22px}.abt img{max-width:220px}.shelf{grid-template-columns:repeat(2,minmax(0,1fr));gap:24px 16px}.tl li{grid-template-columns:minmax(0,1fr);gap:7px;padding-block:24px}.tl p{margin-top:9px;line-height:1.6}.section{padding-block:44px}}
 </style>
-<script>
-let raf = 0, io: IntersectionObserver | null = null, ro: ResizeObserver | null = null;
-document.addEventListener('astro:page-load', () => {
-  const c = document.getElementById('rain') as HTMLCanvasElement | null; if (!c) return;
-  const g = c.getContext('2d')!, G = 'ｱｲｳｴｵｶｷｸｹｺｻｼｽｾｿﾀﾁﾂﾃﾄﾅﾆﾇﾈﾉﾊﾋﾌﾍﾎﾏﾐﾑﾒﾓﾔﾕﾖﾗﾘﾙﾚﾛﾜﾝ0123456789:.=*+<>¦|';
-  const PH = ['wake up, Onur...', 'follow the white rabbit.', 'knock, knock.', 'Mr. Anderson...', 'the Matrix has you.'];
-  const reduce = matchMedia('(prefers-reduced-motion: reduce)').matches, fig = c.parentElement!;
-  let W = 0, H = 0, fs = 16, cols = 0, rows = 0, y: number[] = [], sp: number[] = [], vis = true, last = 0, mx = -999, my = -999, red = false;
-  let ph = { text: '', t0: 0, row: 0, col: 0 }, phIdx = 0, nextPh = 2500;
-  let C = { bg: '', fade: '', fadeR: '', box: '', head: '', glyph: '', hot: '', lock: '' };
-  const hexA = (h: string, a: number) => { const m = h.replace('#', ''), v = parseInt(m.length === 3 ? m.split('').map((x) => x + x).join('') : m, 16); return `rgba(${v >> 16 & 255},${v >> 8 & 255},${v & 255},${a})`; };
-  const theme = () => { const s = getComputedStyle(document.documentElement), v = (n: string) => s.getPropertyValue(n).trim(); const dark = document.documentElement.dataset.theme === 'dark'; void dark; void v; C = { bg: '#17191d', fade: hexA('#17191d', 0.1), fadeR: hexA('#17191d', 0.06), box: hexA('#17191d', 0.88), head: '#ecedea', glyph: '#3cc482', hot: '#ecedea', lock: '#e8ffee' }; g.fillStyle = C.bg; g.fillRect(0, 0, W, H); };
-  const mo = new MutationObserver(theme); mo.observe(document.documentElement, { attributes: true, attributeFilter: ['data-theme'] });
-  const rnd = () => G[(Math.random() * G.length) | 0];
-  const size = () => { const r = c.getBoundingClientRect(), d = Math.min(devicePixelRatio || 1, 2); W = r.width; H = r.height; c.width = W * d; c.height = H * d; g.setTransform(d, 0, 0, d, 0, 0); fs = W < 420 ? 13 : 16; cols = Math.ceil(W / fs); rows = Math.ceil(H / fs); y = Array.from({ length: cols }, () => Math.random() * -rows); sp = Array.from({ length: cols }, () => 0.45 + Math.random() * 0.7); theme(); };
-  const frame = (t: number) => {
-    g.fillStyle = red ? C.fadeR : C.fade; g.fillRect(0, 0, W, H); g.font = `${fs}px "DM Mono", monospace`; g.textBaseline = 'top';
-    for (let i = 0; i < cols; i++) {
-      const x = i * fs, py = Math.floor(y[i]) * fs, dx = x - mx, dy = py - my, near = Math.max(0, 1 - Math.hypot(dx, dy) / 140);
-      g.globalAlpha = near > 0.15 ? 0.6 + near * 0.4 : 1; g.fillStyle = near > 0.15 || Math.random() < 0.05 ? C.hot : C.glyph;
-      g.fillText(rnd(), x, py); g.globalAlpha = 1;
-      y[i] += sp[i] * (red ? 1.9 : 1) * (1 + near * 2.5);
-      if (py > H && Math.random() > (red ? 0.9 : 0.975)) y[i] = 0;
-    }
-    if (ph.text) {
-      const age = t - ph.t0, n = ph.text.length;
-      g.fillStyle = C.box; g.fillRect(ph.col * fs - 8, ph.row * fs - 6, n * fs * 0.62 + 16, fs + 12);
-      for (let k = 0; k < n; k++) { const ch = ph.text[k], lock = age > 140 * k + 300, out = age > 3600 + 40 * k; if (ch === ' ' || out) continue; g.fillStyle = lock ? C.lock : C.glyph; g.shadowColor = '#3cff8a'; g.shadowBlur = lock ? 10 : 0; g.fillText(lock ? ch : rnd(), ph.col * fs + k * fs * 0.62, ph.row * fs); }
-      g.shadowBlur = 0; if (age > 3600 + 40 * n + 300) ph.text = '';
-    } else if (t > nextPh) {
-      const text = PH[phIdx++ % PH.length]; ph = { text, t0: t, row: Math.max(1, Math.floor(rows * (0.25 + Math.random() * 0.4))), col: Math.max(1, Math.floor((W - text.length * fs * 0.62) / fs / 2)) }; nextPh = t + 7000;
-    }
-  };
-  const loop = (t: number) => { raf = requestAnimationFrame(loop); if (!vis || t - last < (red ? 34 : 50)) return; last = t; frame(t); };
-  fig.addEventListener('pointermove', (e) => { const r = c.getBoundingClientRect(); mx = e.clientX - r.left; my = e.clientY - r.top; });
-  fig.addEventListener('pointerleave', () => { mx = my = -999; });
-  ro = new ResizeObserver(() => { size(); if (reduce) for (let i = 0; i < 40; i++) frame(0); }); ro.observe(c); size();
-  if (reduce) { for (let i = 0; i < 40; i++) frame(0); return; }
-  io = new IntersectionObserver((e) => (vis = e[0].isIntersecting)); io.observe(c); raf = requestAnimationFrame(loop);
-});
-let mo2: MutationObserver | null = null;
-document.addEventListener('astro:before-swap', () => { cancelAnimationFrame(raf); io?.disconnect(); ro?.disconnect(); });
-</script>
