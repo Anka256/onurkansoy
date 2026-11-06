@@ -9,7 +9,7 @@ const b = import.meta.env.BASE_URL.replace(/\/$/, '');
     <button type="button" class="mnav next" aria-label="Next song"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9 5l7 7-7 7"/></svg></button>
   </div>
   <p class="now"><b class="song"></b><span class="who"></span></p>
-  <div class="ytbox" hidden><div id="ytp"></div></div>
+  <div class="ytbox"><div id="ytp"></div></div>
 </section>
 <style is:global>
 .mc{margin-top:8px}
@@ -42,9 +42,9 @@ function loadApi(): Promise<any> {
 document.addEventListener('astro:page-load', () => {
   const root = document.querySelector<HTMLElement>('[data-mc]'); if (!root) return;
   const T: { yt: string; t: string; a: string; al: string }[] = JSON.parse(root.dataset.tracks!);
-  const recs = [...root.querySelectorAll<HTMLElement>('.rec')], stage = root.querySelector<HTMLElement>('.stage')!, box = root.querySelector<HTMLElement>('.ytbox')!;
+  const recs = [...root.querySelectorAll<HTMLElement>('.rec')], stage = root.querySelector<HTMLElement>('.stage')!;
   const song = root.querySelector<HTMLElement>('.song')!, who = root.querySelector<HTMLElement>('.who')!;
-  const n = T.length; let cur = 0, playing = false, ready = false, want = false, fails = 0;
+  const n = T.length; let cur = 0, playing = false, ready = false, want = false, made = false, fails = 0, loaded = '';
   const rel = (i: number) => { let o = i - cur; if (o > n / 2) o -= n; if (o < -n / 2) o += n; return o; };
   const setPlay = (p: boolean) => { playing = p; root.classList.toggle('play', p); };
   const render = () => {
@@ -58,26 +58,29 @@ document.addEventListener('astro:page-load', () => {
     });
     song.textContent = T[cur].t; who.textContent = T[cur].a;
   };
-  const start = async () => {
-    want = true; box.hidden = false;
-    if (!player) {
-      box.innerHTML = '<div id="ytp"></div>';
-      const YT = await loadApi();
-      player = new YT.Player('ytp', { width: 356, height: 200, videoId: T[cur].yt, playerVars: { autoplay: 1, controls: 0, rel: 0, playsinline: 1, iv_load_policy: 3, disablekb: 1, origin: location.origin, enablejsapi: 1 },
-        events: { onReady: (e: any) => { ready = true; e.target.playVideo(); }, onError: skip, onStateChange: (e: any) => { if (e.data === 1) { fails = 0; setPlay(true); } if (e.data === 2) { want = false; setPlay(false); } if (e.data === 0) move(1); } } });
-    } else if (ready) player.playVideo();
+  // The player is made before the first click, so that the click itself can start playback:
+  // a browser blocks sound that begins later than the gesture that asked for it.
+  const make = async () => {
+    if (made) return; made = true;
+    const YT = await loadApi(); if (!root.isConnected) return;
+    loaded = T[cur].yt;
+    player = new YT.Player('ytp', { width: 356, height: 200, videoId: loaded, playerVars: { controls: 0, rel: 0, playsinline: 1, iv_load_policy: 3, disablekb: 1, origin: location.origin, enablejsapi: 1 },
+      events: { onReady: () => { ready = true; sync(); }, onError: skip, onStateChange: (e: any) => { if (e.data === 1) { fails = 0; setPlay(true); } if (e.data === 2) { want = false; setPlay(false); } if (e.data === 0) move(1); } } });
   };
+  const sync = () => { if (!ready) return; const id = T[cur].yt; if (id !== loaded) { loaded = id; if (want) player.loadVideoById(id); else player.cueVideoById(id); } else if (want) player.playVideo(); };
+  const start = () => { want = true; make(); sync(); };
   // A track YouTube refuses to embed is skipped; the player itself is never shown.
-  const skip = () => { if (++fails < n) { move(1); return; } fails = 0; want = false; setPlay(false); try { player?.destroy(); } catch {} player = null; ready = false; box.hidden = true; who.textContent = 'Playback is not available right now'; };
+  const skip = () => { if (++fails < n) { move(1); return; } fails = 0; want = false; setPlay(false); who.textContent = 'Playback is not available right now'; };
   const toggle = () => { if (playing && ready) { want = false; player.pauseVideo(); } else start(); };
-  const move = (d: number) => { const was = want; cur = (cur + d + n) % n; render(); if (player) { try { player.destroy(); } catch {} player = null; ready = false; setPlay(false); if (was) start(); else box.hidden = true; } };
+  const move = (d: number) => { cur = (cur + d + n) % n; render(); sync(); };
   recs.forEach((r, i) => { r.addEventListener('click', (e) => { const o = rel(i); if (o) move(o); else if ((e.target as HTMLElement).closest('.pp')) toggle(); }); });
   root.querySelector('.prev')!.addEventListener('click', () => move(-1));
   root.querySelector('.next')!.addEventListener('click', () => move(1));
   stage.addEventListener('keydown', (e) => { if (e.key === 'ArrowLeft') { move(-1); e.preventDefault(); } if (e.key === 'ArrowRight') { move(1); e.preventDefault(); } if (e.key === ' ' || e.key === 'Enter') { toggle(); e.preventDefault(); } });
   let sx = 0; stage.addEventListener('pointerdown', (e) => (sx = e.clientX)); stage.addEventListener('pointerup', (e) => { const d = e.clientX - sx; if (Math.abs(d) > 45) move(d < 0 ? 1 : -1); });
   const ro = new ResizeObserver(render); ro.observe(stage); render();
-  cleanup = () => { ro.disconnect(); try { player?.destroy(); } catch {} player = null; };
+  const near = new IntersectionObserver((e) => { if (e[0].isIntersecting) { near.disconnect(); make(); } }, { rootMargin: '700px' }); near.observe(stage);
+  cleanup = () => { ro.disconnect(); near.disconnect(); try { player?.destroy(); } catch {} player = null; };
 });
 document.addEventListener('astro:before-swap', () => { cleanup?.(); cleanup = null; });
 </script>

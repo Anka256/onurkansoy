@@ -1,0 +1,47 @@
+<figure class="rain" aria-label="Falling green code in the style of The Matrix, with lines from the film appearing in it">
+  <canvas id="rain"></canvas>
+</figure>
+<style is:global>
+.rain{position:relative;flex:1;width:100%;margin:0;background:#17191d;border:2px solid var(--wall);min-height:420px;overflow:hidden;min-width:0;cursor:crosshair}
+.rain canvas{position:absolute;inset:0;width:100%;height:100%}
+@media(max-width:860px){.rain{min-height:300px}}
+</style>
+<script>
+let raf = 0, io: IntersectionObserver | null = null, ro: ResizeObserver | null = null;
+document.addEventListener('astro:page-load', () => {
+  const c = document.getElementById('rain') as HTMLCanvasElement | null; if (!c) return;
+  const g = c.getContext('2d')!, G = 'ｱｲｳｴｵｶｷｸｹｺｻｼｽｾｿﾀﾁﾂﾃﾄﾅﾆﾇﾈﾉﾊﾋﾌﾍﾎﾏﾐﾑﾒﾓﾔﾕﾖﾗﾘﾙﾚﾛﾜﾝ0123456789:.=*+<>¦|';
+  const PH = ['wake up, Onur...', 'follow the white rabbit.', 'knock, knock.', 'Mr. Anderson...', 'the Matrix has you.'];
+  const reduce = matchMedia('(prefers-reduced-motion: reduce)').matches, fig = c.parentElement!;
+  const BG = '#17191d', FADE = 'rgba(23,25,29,.1)', BOX = 'rgba(23,25,29,.88)', HOT = '#ecedea', GLYPH = '#3cc482', LOCK = '#e8ffee';
+  let W = 0, H = 0, fs = 16, cols = 0, rows = 0, y: number[] = [], sp: number[] = [], vis = true, last = 0, mx = -999, my = -999;
+  let ph = { text: '', t0: 0, row: 0, col: 0 }, phIdx = 0, nextPh = 2500;
+  const rnd = () => G[(Math.random() * G.length) | 0];
+  const size = () => { const r = c.getBoundingClientRect(), d = Math.min(devicePixelRatio || 1, 2); W = r.width; H = r.height; c.width = W * d; c.height = H * d; g.setTransform(d, 0, 0, d, 0, 0); fs = W < 420 ? 13 : 16; cols = Math.ceil(W / fs); rows = Math.ceil(H / fs); y = Array.from({ length: cols }, () => Math.random() * -rows); sp = Array.from({ length: cols }, () => 0.45 + Math.random() * 0.7); g.fillStyle = BG; g.fillRect(0, 0, W, H); };
+  const frame = (t: number) => {
+    g.fillStyle = FADE; g.fillRect(0, 0, W, H); g.font = `${fs}px "DM Mono", monospace`; g.textBaseline = 'top';
+    for (let i = 0; i < cols; i++) {
+      const x = i * fs, py = Math.floor(y[i]) * fs, near = Math.max(0, 1 - Math.hypot(x - mx, py - my) / 140);
+      g.globalAlpha = near > 0.15 ? 0.6 + near * 0.4 : 1; g.fillStyle = near > 0.15 || Math.random() < 0.05 ? HOT : GLYPH;
+      g.fillText(rnd(), x, py); g.globalAlpha = 1;
+      y[i] += sp[i] * (1 + near * 2.5);
+      if (py > H && Math.random() > 0.975) y[i] = 0;
+    }
+    if (ph.text) {
+      const age = t - ph.t0, n = ph.text.length;
+      g.fillStyle = BOX; g.fillRect(ph.col * fs - 8, ph.row * fs - 6, n * fs * 0.62 + 16, fs + 12);
+      for (let k = 0; k < n; k++) { const ch = ph.text[k], lock = age > 140 * k + 300, out = age > 3600 + 40 * k; if (ch === ' ' || out) continue; g.fillStyle = lock ? LOCK : GLYPH; g.shadowColor = '#3cff8a'; g.shadowBlur = lock ? 10 : 0; g.fillText(lock ? ch : rnd(), ph.col * fs + k * fs * 0.62, ph.row * fs); }
+      g.shadowBlur = 0; if (age > 3600 + 40 * n + 300) ph.text = '';
+    } else if (t > nextPh) {
+      const text = PH[phIdx++ % PH.length]; ph = { text, t0: t, row: Math.max(1, Math.floor(rows * (0.25 + Math.random() * 0.4))), col: Math.max(1, Math.floor((W - text.length * fs * 0.62) / fs / 2)) }; nextPh = t + 7000;
+    }
+  };
+  const loop = (t: number) => { raf = requestAnimationFrame(loop); if (!vis || t - last < 50) return; last = t; frame(t); };
+  fig.addEventListener('pointermove', (e) => { const r = c.getBoundingClientRect(); mx = e.clientX - r.left; my = e.clientY - r.top; });
+  fig.addEventListener('pointerleave', () => { mx = my = -999; });
+  ro = new ResizeObserver(() => { size(); if (reduce) for (let i = 0; i < 40; i++) frame(0); }); ro.observe(c); size();
+  if (reduce) return;
+  io = new IntersectionObserver((e) => (vis = e[0].isIntersecting)); io.observe(c); raf = requestAnimationFrame(loop);
+});
+document.addEventListener('astro:before-swap', () => { cancelAnimationFrame(raf); io?.disconnect(); ro?.disconnect(); });
+</script>

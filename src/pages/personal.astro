@@ -2,7 +2,7 @@
 import Base from '../layouts/Base.astro';
 import { events } from '../data/site';
 import MusicCorner from '../components/MusicCorner.astro';
-import SmithCorner from '../components/SmithCorner.astro';
+import MatrixCorner from '../components/MatrixCorner.astro';
 const b = import.meta.env.BASE_URL.replace(/\/$/, '');
 const reading = [
   { t: 'Reinforcement Learning: An Introduction', a: 'Richard S. Sutton, Andrew G. Barto', img: 'sutton' },
@@ -29,7 +29,7 @@ const next = [
     <h3 class="sub">Languages</h3>
     <ul class="mem"><li><b>Turkish</b><span>Native</span></li><li><b>English</b><span>B2</span></li><li><b>Italian</b><span>Beginner</span></li></ul>
   </div>
-  <div class="rv" style="min-width:0;display:flex"><SmithCorner /></div>
+  <div class="rv" style="min-width:0;display:flex"><MatrixCorner /></div>
 </div>
 
 <div class="wrap section"><hr class="rule"><h2 class="h2 rv" style="margin-top:26px">My best trip hop corner</h2>
