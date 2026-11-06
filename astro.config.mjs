@@ -4,4 +4,5 @@ export default defineConfig({
   base: process.env.SITE_BASE || '/onurkansoy',
   trailingSlash: 'ignore',
   build: { format: 'directory' },
+  redirects: { '/about': '/onurkansoy/personal/' },
 });
