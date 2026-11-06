@@ -2,7 +2,7 @@
   <canvas id="rain"></canvas>
 </figure>
 <style is:global>
-.rain{position:relative;flex:1;width:100%;margin:0;background:#17191d;border:2px solid var(--wall);min-height:420px;overflow:hidden;min-width:0;cursor:crosshair}
+.rain{--edge:transparent 0,rgba(0,0,0,.1) 6px,rgba(0,0,0,.36) 14px,rgba(0,0,0,.72) 24px,#000 36px,#000 calc(100% - 36px),rgba(0,0,0,.72) calc(100% - 24px),rgba(0,0,0,.36) calc(100% - 14px),rgba(0,0,0,.1) calc(100% - 6px),transparent 100%;position:relative;flex:1;width:100%;margin:0;background:#17191d;min-height:420px;overflow:hidden;min-width:0;cursor:crosshair;-webkit-mask-image:linear-gradient(to right,var(--edge)),linear-gradient(to bottom,var(--edge));mask-image:linear-gradient(to right,var(--edge)),linear-gradient(to bottom,var(--edge));-webkit-mask-composite:source-in;mask-composite:intersect}
 .rain canvas{position:absolute;inset:0;width:100%;height:100%}
 @media(max-width:860px){.rain{min-height:300px}}
 </style>

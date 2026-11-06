@@ -29,7 +29,7 @@ const b = import.meta.env.BASE_URL.replace(/\/$/, '');
 .pp .i-pause,.mc.play .rec.on .pp .i-play{display:none}.mc.play .rec.on .pp .i-pause{display:block}
 .mnav{position:absolute;top:50%;translate:0 -50%;z-index:30;width:46px;height:46px;border-radius:50%;border:2px solid var(--wall);background:var(--bg);color:var(--fg);display:grid;place-items:center;cursor:pointer;padding:0}
 .mnav:hover{background:var(--fg);color:var(--bg)}.mnav svg{width:22px;height:22px;fill:none;stroke:currentColor;stroke-width:2.6;stroke-linecap:round;stroke-linejoin:round}.mnav.prev{left:6px}.mnav.next{right:6px}
-.now{text-align:center;margin-top:10px;display:flex;flex-direction:column;gap:2px}.now .song{font-size:clamp(22px,2.4vw,28px);letter-spacing:-.02em}.now .who{color:var(--mut)}
+.now{position:relative;text-align:center;margin-top:-30px;display:flex;flex-direction:column;gap:2px}.now .song{font-size:clamp(22px,2.4vw,28px);letter-spacing:-.02em}.now .who{color:var(--mut)}
 .ytbox{position:fixed;left:-1200px;bottom:0;width:356px;height:200px;pointer-events:none}.ytbox iframe{width:356px;height:200px;border:0;display:block}
 @media(prefers-reduced-motion:reduce){.rec .vinyl{animation:none!important}}
 </style>
@@ -44,7 +44,7 @@ document.addEventListener('astro:page-load', () => {
   const T: { yt: string; t: string; a: string; al: string }[] = JSON.parse(root.dataset.tracks!);
   const recs = [...root.querySelectorAll<HTMLElement>('.rec')], stage = root.querySelector<HTMLElement>('.stage')!;
   const song = root.querySelector<HTMLElement>('.song')!, who = root.querySelector<HTMLElement>('.who')!;
-  const n = T.length; let cur = 0, playing = false, ready = false, want = false, made = false, fails = 0, loaded = '';
+  const n = T.length; let cur = 0, playing = false, ready = false, want = false, made = false, switching = false, fails = 0, loaded = '';
   const rel = (i: number) => { let o = i - cur; if (o > n / 2) o -= n; if (o < -n / 2) o += n; return o; };
   const setPlay = (p: boolean) => { playing = p; root.classList.toggle('play', p); };
   const render = () => {
@@ -65,12 +65,13 @@ document.addEventListener('astro:page-load', () => {
     const YT = await loadApi(); if (!root.isConnected) return;
     loaded = T[cur].yt;
     player = new YT.Player('ytp', { width: 356, height: 200, videoId: loaded, playerVars: { controls: 0, rel: 0, playsinline: 1, iv_load_policy: 3, disablekb: 1, origin: location.origin, enablejsapi: 1 },
-      events: { onReady: () => { ready = true; sync(); }, onError: skip, onStateChange: (e: any) => { if (e.data === 1) { fails = 0; setPlay(true); } if (e.data === 2) { want = false; setPlay(false); } if (e.data === 0) move(1); } } });
+      events: { onReady: () => { ready = true; sync(); }, onError: skip, onStateChange: (e: any) => { if (e.data === 1) { fails = 0; switching = false; want = true; setPlay(true); } if (e.data === 2 && !switching) { want = false; setPlay(false); } if (e.data === 0) move(1); } } });
   };
-  const sync = () => { if (!ready) return; const id = T[cur].yt; if (id !== loaded) { loaded = id; if (want) player.loadVideoById(id); else player.cueVideoById(id); } else if (want) player.playVideo(); };
+  // YouTube reports a brief pause while it swaps videos; that must not read as the listener pausing.
+  const sync = () => { if (!ready) return; const id = T[cur].yt; if (id !== loaded) { loaded = id; if (want) { switching = true; player.loadVideoById(id); } else player.cueVideoById(id); } else if (want) player.playVideo(); };
   const start = () => { want = true; make(); sync(); };
   // A track YouTube refuses to embed is skipped; the player itself is never shown.
-  const skip = () => { if (++fails < n) { move(1); return; } fails = 0; want = false; setPlay(false); who.textContent = 'Playback is not available right now'; };
+  const skip = () => { if (++fails < n) { move(1); return; } fails = 0; want = false; switching = false; setPlay(false); who.textContent = 'Playback is not available right now'; };
   const toggle = () => { if (playing && ready) { want = false; player.pauseVideo(); } else start(); };
   const move = (d: number) => { cur = (cur + d + n) % n; render(); sync(); };
   recs.forEach((r, i) => { r.addEventListener('click', (e) => { const o = rel(i); if (o) move(o); else if ((e.target as HTMLElement).closest('.pp')) toggle(); }); });
