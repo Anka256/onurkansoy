@@ -1,12 +1,8 @@
 ---
 import Base from '../layouts/Base.astro';
 import { events } from '../data/site';
+import MusicCorner from '../components/MusicCorner.astro';
 const b = import.meta.env.BASE_URL.replace(/\/$/, '');
-const tracks = [
-  { id: 3129748, t: 'Teardrop', a: 'Massive Attack', al: 'Mezzanine' },
-  { id: 982665, t: 'Numb', a: 'Portishead', al: 'Dummy' },
-  { id: 3786220942, t: 'Utopia', a: 'Goldfrapp', al: 'Felt Mountain' },
-];
 const reading = [
   { t: 'Reinforcement Learning: An Introduction', a: 'Richard S. Sutton, Andrew G. Barto', img: 'sutton' },
   { t: "L'algoritmo e l'oracolo", a: 'Alessandro Vespignani', note: 'in Turkish translation', img: '' },
@@ -25,21 +21,22 @@ const next = [
 <div class="wrap section me">
   <div class="rv mtext">
     <h2 class="h2">Away from the desk</h2>
-    <p>I play the piano and listen to a lot of music. I like chess, strategy and board games, and DnD, and I enjoy the theatre. I am a big fan of The Matrix.</p>
+    <p>I am still a beginner at the piano, and a much more devoted listener than player. I spent a few years at the bridge table, chaired the Iztech Bridge Society for a while, and have since put the cards down.</p>
+    <p>At the gaming table I am a player, never the DM, and I rotate between DnD, Pathfinder and Cyberpunk. I acted at IZTECH and still go to the theatre whenever I can, interactive plays above all.</p>
+    <p>On The Matrix, I side with the machines' design. The world they built and run is the part that stays with me, and while most people leave as fans of Neo or Morpheus, I came out following Agent Smith: how he grows, and how he comes apart.</p>
     <h3 class="sub">Memberships</h3>
     <ul class="mem"><li><b>Iztech Bridge Society</b><span>Former president, current board member</span></li><li><b>Iztech Neuroscience Society</b><span>Former board member</span></li></ul>
     <h3 class="sub">Languages</h3>
     <ul class="mem"><li><b>Turkish</b><span>Native</span></li><li><b>English</b><span>B2</span></li><li><b>Italian</b><span>Beginner</span></li></ul>
   </div>
-  <figure class="rain rv" aria-label="Falling green code in the style of The Matrix">
+  <figure class="rain rv" aria-label="Interactive falling green code in the style of The Matrix">
     <canvas id="rain"></canvas>
-    <figcaption><span>wake up, Onur...</span></figcaption>
+    <div class="pills"><button type="button" class="pill red" data-pill="red" aria-pressed="false">red pill</button><button type="button" class="pill blue" data-pill="blue" aria-pressed="true">blue pill</button></div>
   </figure>
 </div>
 
 <div class="wrap section"><hr class="rule"><h2 class="h2 rv" style="margin-top:26px">My best trip hop corner</h2>
-  <div class="tracks rv">{tracks.map(k=><div class="trk"><button type="button" class="dz" data-dz={k.id} aria-label={`Play ${k.t} by ${k.a} on Deezer`}><span class="pl" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg></span><span class="tt"><b>{k.t}</b><span>{k.a} · {k.al}</span></span></button></div>)}</div>
-  <p class="note rv">Press play to load the Deezer players.</p>
+  <MusicCorner />
 </div>
 
 <div class="wrap section"><hr class="rule"><h2 class="h2 rv" style="margin-top:26px">Books</h2>
@@ -57,36 +54,57 @@ const next = [
 .mtext .big{font-size:clamp(24px,2.8vw,34px);line-height:1.18;font-weight:700;letter-spacing:-.02em;margin-bottom:16px}.mtext p{max-width:58ch}
 .sub{font-size:15px;font:500 13px var(--mono);color:var(--mut);margin:30px 0 8px;letter-spacing:0}
 .mem{list-style:none;padding:0;margin:0;border-top:1px solid var(--line)}.mem li{display:flex;justify-content:space-between;gap:6px 16px;flex-wrap:wrap;padding-block:9px;border-bottom:1px solid var(--line)}.mem span{color:var(--mut)}
-.rain{position:relative;margin:0;background:#020604;border:2px solid var(--wall);min-height:420px;overflow:hidden;min-width:0}.rain canvas{position:absolute;inset:0;width:100%;height:100%}
-.rain figcaption{position:absolute;left:18px;bottom:16px;font:500 15px var(--mono);color:#b9ffcf;text-shadow:0 0 10px #22ff6a}.rain figcaption span::after{content:"_";animation:blink 1.1s steps(1) infinite}@keyframes blink{50%{opacity:0}}
-.tracks{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:14px;margin-top:6px}.trk{min-width:0}.trk iframe{width:100%;height:300px;border:0;display:block;background:var(--panel)}.dz{height:300px;flex-direction:column;justify-content:center;align-items:flex-start}.dz{width:100%;display:flex;gap:14px;align-items:center;text-align:left;padding:16px;background:var(--panel);border:2px solid var(--wall);color:var(--fg);cursor:pointer;font:inherit;min-height:96px}.dz:hover{background:var(--fg);color:var(--bg)}.dz:hover .tt span{color:var(--bg)}.pl{width:46px;height:46px;border-radius:50%;background:var(--fg);color:var(--bg);display:grid;place-items:center;flex:none}.dz:hover .pl{background:var(--bg);color:var(--fg)}.pl svg{width:22px;height:22px;fill:currentColor}.tt{min-width:0}.tt b{display:block;font-size:20px;letter-spacing:-.01em}.tt span{display:block;font-size:14px;color:var(--mut)}
-@media(max-width:760px){.tracks{grid-template-columns:minmax(0,1fr)}}
-.shelf{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:22px 20px;margin-top:10px}
+.rain{position:relative;margin:0;background:var(--panel);border:2px solid var(--wall);min-height:420px;overflow:hidden;min-width:0}.rain canvas{position:absolute;inset:0;width:100%;height:100%}
+.rain{cursor:crosshair}.pills{position:absolute;right:12px;bottom:12px;display:flex;gap:8px;z-index:2}.pill{font:12.5px var(--mono);padding:6px 11px;border:1px solid var(--fg);background:var(--bg);color:var(--fg);cursor:pointer;border-radius:2px;display:flex;align-items:center;gap:7px}.pill::before{content:"";width:9px;height:9px;border-radius:50%;background:var(--c)}.pill.red{--c:var(--hider)}.pill.blue{--c:#3d7bd9}.pill[aria-pressed=true]{background:var(--fg);color:var(--bg)}
+.shelf{display:grid;grid-template-columns:repeat(auto-fill,minmax(210px,1fr));gap:30px 26px;margin-top:12px}
 .book{margin:0;min-width:0}.book img,.book .plain{width:100%;aspect-ratio:2/3;object-fit:cover;border:1px solid var(--line);display:block;box-shadow:0 8px 18px -10px rgba(0,0,0,.45);transition:transform .25s}.book:hover img,.book:hover .plain{transform:translateY(-4px)}
 .book .plain{background:#7a2a1d;color:#f5ead8;padding:16px 14px;display:flex;flex-direction:column;justify-content:space-between}.book .plain span{font-size:19px;font-weight:700;line-height:1.15}.book .plain small{font:12px var(--mono);opacity:.85}
-.book figcaption{margin-top:9px;font-size:14px;line-height:1.35}.book i{display:block;font-style:normal;font-weight:700}.book figcaption span{display:block;color:var(--mut);font-size:13px;margin-top:2px}.book em{display:block;font-style:normal;font:12px var(--mono);color:var(--mut);margin-top:3px}
+.book figcaption{margin-top:12px;font-size:15.5px;line-height:1.35}.book i{display:block;font-style:normal;font-weight:700}.book figcaption span{display:block;color:var(--mut);font-size:13px;margin-top:2px}.book em{display:block;font-style:normal;font:12px var(--mono);color:var(--mut);margin-top:3px}
 .tl{list-style:none;margin:0;padding:0;border-top:2px solid var(--wall)}.tl li{display:grid;grid-template-columns:170px minmax(0,1fr);gap:20px;padding-block:18px;border-bottom:1px solid var(--line)}.tl time{font-size:13px;color:var(--mut);padding-top:5px}.tl p{max-width:68ch;margin-top:6px}
 @media(max-width:860px){.me{grid-template-columns:minmax(0,1fr)}.rain{min-height:300px}}
-@media(max-width:700px){.abt{grid-template-columns:minmax(0,1fr);gap:22px}.abt img{max-width:220px}.shelf{grid-template-columns:repeat(2,minmax(0,1fr));gap:20px 14px}.tl li{grid-template-columns:minmax(0,1fr);gap:7px;padding-block:24px}.tl p{margin-top:9px;line-height:1.6}.section{padding-block:44px}}
+@media(max-width:700px){.abt{grid-template-columns:minmax(0,1fr);gap:22px}.abt img{max-width:220px}.shelf{grid-template-columns:repeat(2,minmax(0,1fr));gap:24px 16px}.tl li{grid-template-columns:minmax(0,1fr);gap:7px;padding-block:24px}.tl p{margin-top:9px;line-height:1.6}.section{padding-block:44px}}
 </style>
 <script>
 let raf = 0, io: IntersectionObserver | null = null, ro: ResizeObserver | null = null;
 document.addEventListener('astro:page-load', () => {
-  const dz = [...document.querySelectorAll<HTMLButtonElement>('[data-dz]')];
-  dz.forEach((b) => (b.onclick = () => dz.forEach((x) => { const f = document.createElement('iframe'); f.src = `https://widget.deezer.com/widget/auto/track/${x.dataset.dz}${x === b ? '?autoplay=true' : ''}`; f.title = x.getAttribute('aria-label') || 'Deezer player'; f.allow = 'encrypted-media; clipboard-write; autoplay'; x.replaceWith(f); })));
   const c = document.getElementById('rain') as HTMLCanvasElement | null; if (!c) return;
-  const g = c.getContext('2d')!, chars = 'ｱｲｳｴｵｶｷｸｹｺｻｼｽｾｿﾀﾁﾂﾃﾄﾅﾆﾇﾈﾉﾊﾋﾌﾍﾎﾏﾐﾑﾒﾓﾔﾕﾖﾗﾘﾙﾚﾛﾜﾝ0123456789:.=*+<>';
-  const reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
-  let W = 0, H = 0, fs = 16, drops: number[] = [], vis = true, last = 0;
-  const size = () => { const r = c.getBoundingClientRect(), d = Math.min(devicePixelRatio || 1, 2); W = r.width; H = r.height; c.width = W * d; c.height = H * d; g.setTransform(d, 0, 0, d, 0, 0); fs = W < 420 ? 13 : 16; drops = Array.from({ length: Math.ceil(W / fs) }, () => Math.random() * -H / fs); g.fillStyle = '#020604'; g.fillRect(0, 0, W, H); };
-  const frame = () => {
-    g.fillStyle = 'rgba(2,6,4,0.09)'; g.fillRect(0, 0, W, H); g.font = `${fs}px "DM Mono", monospace`;
-    drops.forEach((y, i) => { const ch = chars[(Math.random() * chars.length) | 0], x = i * fs, py = y * fs; g.fillStyle = Math.random() < 0.06 ? '#e8ffee' : '#21d860'; g.fillText(ch, x, py); if (py > H && Math.random() > 0.975) drops[i] = 0; else drops[i] = y + 1; });
+  const g = c.getContext('2d')!, G = 'ｱｲｳｴｵｶｷｸｹｺｻｼｽｾｿﾀﾁﾂﾃﾄﾅﾆﾇﾈﾉﾊﾋﾌﾍﾎﾏﾐﾑﾒﾓﾔﾕﾖﾗﾘﾙﾚﾛﾜﾝ0123456789:.=*+<>¦|';
+  const PH = ['wake up, Onur...', 'follow the white rabbit.', 'knock, knock.', 'Mr. Anderson...', 'the Matrix has you.'];
+  const reduce = matchMedia('(prefers-reduced-motion: reduce)').matches, fig = c.parentElement!;
+  let W = 0, H = 0, fs = 16, cols = 0, rows = 0, y: number[] = [], sp: number[] = [], vis = true, last = 0, mx = -999, my = -999, red = false;
+  let ph = { text: '', t0: 0, row: 0, col: 0 }, phIdx = 0, nextPh = 2500;
+  let C = { bg: '', fade: '', fadeR: '', box: '', head: '', glyph: '', hot: '', lock: '' };
+  const hexA = (h: string, a: number) => { const m = h.replace('#', ''), v = parseInt(m.length === 3 ? m.split('').map((x) => x + x).join('') : m, 16); return `rgba(${v >> 16 & 255},${v >> 8 & 255},${v & 255},${a})`; };
+  const theme = () => { const s = getComputedStyle(document.documentElement), v = (n: string) => s.getPropertyValue(n).trim(); const dark = document.documentElement.dataset.theme === 'dark'; C = { bg: v('--panel'), fade: hexA(v('--panel'), 0.12), fadeR: hexA(v('--panel'), 0.07), box: hexA(v('--panel'), 0.9), head: v('--fg'), glyph: v('--seek'), hot: v('--fg'), lock: dark ? '#d9ffe5' : v('--fg') }; g.fillStyle = C.bg; g.fillRect(0, 0, W, H); };
+  const mo = new MutationObserver(theme); mo.observe(document.documentElement, { attributes: true, attributeFilter: ['data-theme'] });
+  const rnd = () => G[(Math.random() * G.length) | 0];
+  const size = () => { const r = c.getBoundingClientRect(), d = Math.min(devicePixelRatio || 1, 2); W = r.width; H = r.height; c.width = W * d; c.height = H * d; g.setTransform(d, 0, 0, d, 0, 0); fs = W < 420 ? 13 : 16; cols = Math.ceil(W / fs); rows = Math.ceil(H / fs); y = Array.from({ length: cols }, () => Math.random() * -rows); sp = Array.from({ length: cols }, () => 0.45 + Math.random() * 0.7); theme(); };
+  const frame = (t: number) => {
+    g.fillStyle = red ? C.fadeR : C.fade; g.fillRect(0, 0, W, H); g.font = `${fs}px "DM Mono", monospace`; g.textBaseline = 'top';
+    for (let i = 0; i < cols; i++) {
+      const x = i * fs, py = Math.floor(y[i]) * fs, dx = x - mx, dy = py - my, near = Math.max(0, 1 - Math.hypot(dx, dy) / 140);
+      g.globalAlpha = near > 0.15 ? 0.6 + near * 0.4 : 1; g.fillStyle = near > 0.15 || Math.random() < 0.05 ? C.hot : C.glyph;
+      g.fillText(rnd(), x, py); g.globalAlpha = 1;
+      y[i] += sp[i] * (red ? 1.9 : 1) * (1 + near * 2.5);
+      if (py > H && Math.random() > (red ? 0.9 : 0.975)) y[i] = 0;
+    }
+    if (ph.text) {
+      const age = t - ph.t0, n = ph.text.length;
+      g.fillStyle = C.box; g.fillRect(ph.col * fs - 8, ph.row * fs - 6, n * fs * 0.62 + 16, fs + 12);
+      for (let k = 0; k < n; k++) { const ch = ph.text[k], lock = age > 140 * k + 300, out = age > 3600 + 40 * k; if (ch === ' ' || out) continue; g.fillStyle = lock ? C.lock : C.glyph; g.shadowColor = C.glyph; g.shadowBlur = lock ? 6 : 0; g.fillText(lock ? ch : rnd(), ph.col * fs + k * fs * 0.62, ph.row * fs); }
+      g.shadowBlur = 0; if (age > 3600 + 40 * n + 300) ph.text = '';
+    } else if (t > nextPh) {
+      const text = PH[phIdx++ % PH.length]; ph = { text, t0: t, row: Math.max(1, Math.floor(rows * (0.25 + Math.random() * 0.4))), col: Math.max(1, Math.floor((W - text.length * fs * 0.62) / fs / 2)) }; nextPh = t + 7000;
+    }
   };
-  const loop = (t: number) => { raf = requestAnimationFrame(loop); if (!vis || t - last < 55) return; last = t; frame(); };
-  ro = new ResizeObserver(() => { size(); if (reduce) for (let i = 0; i < 40; i++) frame(); }); ro.observe(c); size();
-  if (reduce) { for (let i = 0; i < 40; i++) frame(); return; }
+  const loop = (t: number) => { raf = requestAnimationFrame(loop); if (!vis || t - last < (red ? 34 : 50)) return; last = t; frame(t); };
+  fig.addEventListener('pointermove', (e) => { const r = c.getBoundingClientRect(); mx = e.clientX - r.left; my = e.clientY - r.top; });
+  fig.addEventListener('pointerleave', () => { mx = my = -999; });
+  fig.querySelectorAll<HTMLButtonElement>('[data-pill]').forEach((b) => b.addEventListener('click', () => { red = b.dataset.pill === 'red'; fig.querySelectorAll('[data-pill]').forEach((x) => x.setAttribute('aria-pressed', String(x === b))); if (red) { ph = { text: 'there is no spoon.', t0: performance.now(), row: Math.floor(rows / 2), col: Math.max(1, Math.floor((W - 18 * fs * 0.62) / fs / 2)) }; } }));
+  ro = new ResizeObserver(() => { size(); if (reduce) for (let i = 0; i < 40; i++) frame(0); }); ro.observe(c); size();
+  if (reduce) { for (let i = 0; i < 40; i++) frame(0); return; }
   io = new IntersectionObserver((e) => (vis = e[0].isIntersecting)); io.observe(c); raf = requestAnimationFrame(loop);
 });
+let mo2: MutationObserver | null = null;
 document.addEventListener('astro:before-swap', () => { cancelAnimationFrame(raf); io?.disconnect(); ro?.disconnect(); });
 </script>

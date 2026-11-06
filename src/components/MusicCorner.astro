@@ -1,0 +1,79 @@
+---
+import { music } from '../data/music';
+const b = import.meta.env.BASE_URL.replace(/\/$/, '');
+---
+<section class="mc" data-mc data-tracks={JSON.stringify(music)}>
+  <div class="stage" tabindex="0" aria-label="Trip hop records. Use the arrow keys to browse.">
+    {music.map((k, i) => <div class="rec" data-i={i}><span class="disc"><span class="label" style={`background-image:url(${b}/media/music/${k.cover}.webp)`}></span></span><img src={`${b}/media/music/${k.cover}.webp`} alt={`${k.al} cover`} loading="lazy"><button type="button" class="pp" aria-label={`Play ${k.t} by ${k.a}`}><svg class="i-play" viewBox="0 0 24 24" aria-hidden="true"><path d="M8 5v14l11-7z"/></svg><svg class="i-pause" viewBox="0 0 24 24" aria-hidden="true"><path d="M7 5h4v14H7zM13 5h4v14h-4z"/></svg></button></div>)}
+    <button type="button" class="mnav prev" aria-label="Previous song"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M15 5l-7 7 7 7"/></svg></button>
+    <button type="button" class="mnav next" aria-label="Next song"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9 5l7 7-7 7"/></svg></button>
+  </div>
+  <p class="now"><b class="song"></b><span class="who"></span></p>
+  <div class="ytbox" hidden><div id="ytp"></div></div>
+</section>
+<style is:global>
+.mc{margin-top:8px}
+.stage{position:relative;height:clamp(300px,34vw,420px);perspective:1100px;overflow:hidden;outline:none}
+.stage:focus-visible{outline:2px solid var(--seek);outline-offset:4px}
+.rec{position:absolute;left:50%;top:50%;width:clamp(170px,19vw,250px);aspect-ratio:1;cursor:pointer;transform-style:preserve-3d;transition:transform .8s cubic-bezier(.22,.8,.2,1),opacity .6s,filter .6s;translate:-50% -50%}
+.rec img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;box-shadow:0 18px 30px -14px rgba(0,0,0,.55)}
+.rec .disc{position:absolute;inset:4%;border-radius:50%;background:repeating-radial-gradient(circle,#111 0 1.6px,#1c1c1c 1.6px 3.2px);box-shadow:0 10px 24px -10px rgba(0,0,0,.6);transition:transform .8s cubic-bezier(.22,.8,.2,1);animation:spin 9s linear infinite}
+.rec .disc::after{content:"";position:absolute;inset:0;border-radius:50%;background:conic-gradient(from 30deg,transparent 0 40deg,rgba(255,255,255,.13) 60deg,transparent 80deg 220deg,rgba(255,255,255,.09) 240deg,transparent 260deg)}
+.rec .label{position:absolute;inset:33%;border-radius:50%;background-size:cover;background-position:center}
+.rec.on .disc{transform:translateX(36%)}
+.mc.play .rec.on .disc{animation-duration:1.8s}
+@keyframes spin{to{rotate:360deg}}
+.pp{position:absolute;left:50%;top:50%;translate:-50% -50%;width:64px;height:64px;border-radius:50%;border:0;background:rgba(20,20,22,.82);color:#fff;display:grid;place-items:center;cursor:pointer;opacity:0;transition:opacity .3s,transform .2s;pointer-events:none}
+.rec.on .pp{opacity:1;pointer-events:auto}.pp:hover{transform:scale(1.07)}.pp svg{width:28px;height:28px;fill:currentColor}
+.pp .i-pause,.mc.play .rec.on .pp .i-play{display:none}.mc.play .rec.on .pp .i-pause{display:block}
+.mnav{position:absolute;top:50%;translate:0 -50%;z-index:30;width:46px;height:46px;border-radius:50%;border:2px solid var(--wall);background:var(--bg);color:var(--fg);display:grid;place-items:center;cursor:pointer;padding:0}
+.mnav:hover{background:var(--fg);color:var(--bg)}.mnav svg{width:22px;height:22px;fill:none;stroke:currentColor;stroke-width:2.6;stroke-linecap:round;stroke-linejoin:round}.mnav.prev{left:6px}.mnav.next{right:6px}
+.now{text-align:center;margin-top:10px;display:flex;flex-direction:column;gap:2px}.now .song{font-size:clamp(22px,2.4vw,28px);letter-spacing:-.02em}.now .who{color:var(--mut)}
+.ytbox{display:flex;justify-content:center;margin-top:14px}.ytbox iframe{width:356px;max-width:100%;height:200px;border:0;display:block}
+@media(prefers-reduced-motion:reduce){.rec .disc{animation:none!important}}
+</style>
+<script>
+let player: any = null, cleanup: (() => void) | null = null;
+function loadApi(): Promise<any> {
+  const w = window as any; if (w.YT?.Player) return Promise.resolve(w.YT);
+  return new Promise((res) => { const prev = w.onYouTubeIframeAPIReady; w.onYouTubeIframeAPIReady = () => { prev?.(); res(w.YT); }; if (!document.querySelector('script[data-yt-api]')) { const s = document.createElement('script'); s.src = 'https://www.youtube.com/iframe_api'; s.dataset.ytApi = '1'; document.head.append(s); } });
+}
+document.addEventListener('astro:page-load', () => {
+  const root = document.querySelector<HTMLElement>('[data-mc]'); if (!root) return;
+  const T: { yt: string; t: string; a: string; al: string }[] = JSON.parse(root.dataset.tracks!);
+  const recs = [...root.querySelectorAll<HTMLElement>('.rec')], stage = root.querySelector<HTMLElement>('.stage')!, box = root.querySelector<HTMLElement>('.ytbox')!;
+  const song = root.querySelector<HTMLElement>('.song')!, who = root.querySelector<HTMLElement>('.who')!;
+  const n = T.length; let cur = 0, playing = false, ready = false;
+  const rel = (i: number) => { let o = i - cur; if (o > n / 2) o -= n; if (o < -n / 2) o += n; return o; };
+  const setPlay = (p: boolean) => { playing = p; root.classList.toggle('play', p); };
+  const render = () => {
+    const step = Math.min(stage.clientWidth * 0.27, 260);
+    recs.forEach((r, i) => {
+      const o = rel(i), a = Math.abs(o);
+      r.style.transform = `translateX(${o * step}px) translateZ(${-a * 170}px) rotateY(${-o * 32}deg) scale(${1 - Math.min(a, 2) * 0.12})`;
+      r.style.opacity = a > 2 ? '0' : a ? String(1 - a * 0.25) : '1';
+      r.style.zIndex = String(20 - a); r.style.filter = a ? `brightness(${1 - a * 0.18})` : '';
+      r.style.pointerEvents = a > 2 ? 'none' : ''; r.classList.toggle('on', o === 0);
+    });
+    song.textContent = T[cur].t; who.textContent = T[cur].a;
+  };
+  const start = async () => {
+    box.hidden = false;
+    if (!player) {
+      const YT = await loadApi();
+      player = new YT.Player('ytp', { width: 356, height: 200, videoId: T[cur].yt, playerVars: { autoplay: 1, controls: 0, rel: 0, playsinline: 1, iv_load_policy: 3, disablekb: 1, origin: location.origin, enablejsapi: 1 },
+        events: { onReady: (e: any) => { ready = true; e.target.playVideo(); }, onStateChange: (e: any) => { if (e.data === 1) setPlay(true); if (e.data === 2) setPlay(false); if (e.data === 0) { cur = (cur + 1) % n; render(); player.loadVideoById(T[cur].yt); } } } });
+    } else if (ready) player.playVideo();
+  };
+  const toggle = () => { if (playing && ready) player.pauseVideo(); else start(); };
+  const move = (d: number) => { cur = (cur + d + n) % n; render(); if (player && ready) { if (playing) player.loadVideoById(T[cur].yt); else player.cueVideoById(T[cur].yt); } };
+  recs.forEach((r, i) => { r.addEventListener('click', (e) => { const o = rel(i); if (o) move(o); else if ((e.target as HTMLElement).closest('.pp')) toggle(); }); });
+  root.querySelector('.prev')!.addEventListener('click', () => move(-1));
+  root.querySelector('.next')!.addEventListener('click', () => move(1));
+  stage.addEventListener('keydown', (e) => { if (e.key === 'ArrowLeft') { move(-1); e.preventDefault(); } if (e.key === 'ArrowRight') { move(1); e.preventDefault(); } if (e.key === ' ' || e.key === 'Enter') { toggle(); e.preventDefault(); } });
+  let sx = 0; stage.addEventListener('pointerdown', (e) => (sx = e.clientX)); stage.addEventListener('pointerup', (e) => { const d = e.clientX - sx; if (Math.abs(d) > 45) move(d < 0 ? 1 : -1); });
+  const ro = new ResizeObserver(render); ro.observe(stage); render();
+  cleanup = () => { ro.disconnect(); try { player?.destroy(); } catch {} player = null; };
+});
+document.addEventListener('astro:before-swap', () => { cleanup?.(); cleanup = null; });
+</script>
