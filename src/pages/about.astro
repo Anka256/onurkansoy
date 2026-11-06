@@ -1,14 +1,79 @@
 ---
 import Base from '../layouts/Base.astro';
-import { experience, courses, events } from '../data/site';
+import { events } from '../data/site';
 const b = import.meta.env.BASE_URL.replace(/\/$/, '');
+const reading = [
+  { t: 'Reinforcement Learning: An Introduction', a: 'Richard S. Sutton, Andrew G. Barto', img: 'sutton' },
+  { t: "L'algoritmo e l'oracolo", a: 'Alessandro Vespignani', note: 'in Turkish translation', img: '' },
+];
+const next = [
+  { t: 'Multi-Agent Reinforcement Learning: Foundations and Modern Approaches', a: 'Stefano V. Albrecht, Filippos Christianos, Lukas Schäfer', img: 'marl' },
+  { t: 'The Evolution of Cooperation', a: 'Robert Axelrod', img: 'axelrod' },
+  { t: 'Artificial Intelligence and Games', a: 'Georgios N. Yannakakis, Julian Togelius', img: 'aigames' },
+  { t: 'An Approach to Cybernetics', a: 'Gordon Pask', img: 'pask' },
+  { t: 'Neuromancer', a: 'William Gibson', img: 'neuromancer' },
+];
 ---
-<Base title="About" description="About Onur Kansoy.">
-<div class="wrap pagehead abt"><div><span class="kicker">About</span><h1 >Onur Kansoy</h1><p class="lead">Computer engineering student at <a href="https://en.iyte.edu.tr/">Izmir Institute of Technology</a>, planning graduate study at <a href="https://ceng.metu.edu.tr/">METU</a> from spring 2027.</p></div><img src={`${b}/media/onur.webp`} alt="Portrait of Onur Kansoy"></div>
-<div class="wrap section"><h2 class="h2 rv">Experience</h2><ol class="tl">{experience.map(e=><li class="rv"><time class="mono">{e.when}</time><div><h3 style="font-size:24px">{e.role}</h3><p class="kicker" style="margin-top:4px"><a href={e.url}>{e.org}</a></p><p>{e.text}</p></div></li>)}</ol></div>
+<Base title="About" description="About Onur Kansoy, outside research.">
+<div class="wrap pagehead abt"><div><span class="kicker">About</span><h1>Onur Kansoy</h1><p class="lead">Computer engineering student at <a href="https://en.iyte.edu.tr/">Izmir Institute of Technology</a>, planning graduate study at <a href="https://ceng.metu.edu.tr/">METU</a> from spring 2027.</p></div><img src={`${b}/media/onur.webp`} alt="Portrait of Onur Kansoy"></div>
+
+<div class="wrap section me">
+  <div class="rv mtext">
+    <h2 class="h2">Away from the desk</h2>
+    <p class="big">I am usually at a piano or a bridge table.</p>
+    <p>I ran the Iztech Bridge Society as its president and never quite left. I still sit on its board. I will play almost anything that comes with rules: chess, strategy games, board games, a DnD campaign that runs far too long. I go to the theatre whenever I get the chance, and The Matrix is the film I keep coming back to.</p>
+    <h3 class="sub">Memberships</h3>
+    <ul class="mem"><li><b>Iztech Bridge Society</b><span>Former president, current board member</span></li><li><b>Iztech Neuroscience Society</b><span>Former board member</span></li></ul>
+    <h3 class="sub">Languages</h3>
+    <ul class="mem"><li><b>Turkish</b><span>Native</span></li><li><b>English</b><span>B2</span></li><li><b>Italian</b><span>Beginner</span></li></ul>
+  </div>
+  <figure class="rain rv" aria-label="Falling green code in the style of The Matrix">
+    <canvas id="rain"></canvas>
+    <figcaption><span>wake up, Onur...</span></figcaption>
+  </figure>
+</div>
+
+<div class="wrap section"><hr class="rule"><h2 class="h2 rv" style="margin-top:26px">Books</h2>
+  <p class="kicker rv">Reading now</p>
+  <div class="shelf rv">{reading.map(k=><figure class="book">{k.img?<img src={`${b}/media/books/${k.img}.webp`} alt={`Cover of ${k.t}`} loading="lazy">:<div class="plain"><span>{k.t}</span><small>{k.a}</small></div>}<figcaption><i>{k.t}</i><span>{k.a}</span>{k.note&&<em>{k.note}</em>}</figcaption></figure>)}</div>
+  <p class="kicker rv" style="margin-top:30px">Next on the list</p>
+  <div class="shelf rv">{next.map(k=><figure class="book"><img src={`${b}/media/books/${k.img}.webp`} alt={`Cover of ${k.t}`} loading="lazy"><figcaption><i>{k.t}</i><span>{k.a}</span></figcaption></figure>)}</div>
+</div>
+
 <div class="wrap section"><h2 class="h2 rv">Hackathons and game jams</h2><ol class="tl">{events.map(e=><li class="rv"><time class="mono">{e.when}</time><div><h3 style="font-size:22px">{e.url?<a href={e.url}>{e.name}</a>:e.name}</h3><p>{e.text}</p></div></li>)}</ol></div>
-<div class="wrap section grid2"><div class="rv"><h2 class="h2">Courses</h2><p class="kicker">This term</p><ul class="clist">{courses.current.map(c=><li><span class="mono">{c.code}</span> {c.name}{c.note&&<em> · {c.note}</em>}</li>)}</ul><p class="kicker" style="margin-top:18px">Completed</p><ul class="clist">{courses.done.map(c=><li><span class="mono">{c.code}</span> {c.name}{c.grade&&<em> · {c.grade}</em>}</li>)}</ul></div>
-<div class="rv"><h2 class="h2">Outside the lab</h2><p class="prose">I am a former president and current board member of the Iztech Bridge Society, and a former board member of the Iztech Neuroscience Society.  I also like chess, strategy games, board games and DnD, go to the theatre, and watch birds.</p><h2 class="h2" style="margin-top:28px">Languages</h2><ul class="clist"><li>Turkish, native</li><li>English, B2</li><li>Italian, beginner</li></ul></div></div>
 </Base>
-<style is:global>.abt{display:grid;grid-template-columns:minmax(0,1fr) minmax(180px,300px);gap:34px;align-items:end}.abt img{width:100%;border:2px solid var(--wall)}.clist{list-style:none;padding:0;margin:0;display:grid;gap:8px}.clist em{color:var(--mut);font-style:normal}.tl{list-style:none;margin:0;padding:0;border-top:2px solid var(--wall)}.tl li{display:grid;grid-template-columns:170px minmax(0,1fr);gap:20px;padding-block:18px;border-bottom:1px solid var(--line)}.tl time{font-size:13px;color:var(--mut);padding-top:5px}.tl p{max-width:68ch;margin-top:6px}
-@media(max-width:700px){.abt{grid-template-columns:minmax(0,1fr);gap:22px}.abt img{max-width:220px}.tl li{grid-template-columns:minmax(0,1fr);gap:7px;padding-block:26px}.tl h3{line-height:1.2}.tl .kicker{line-height:1.55;margin-top:7px!important}.tl p{margin-top:11px;line-height:1.65}.clist{gap:14px}.clist li{line-height:1.5}.section{padding-block:44px}.section .h2{margin-bottom:18px}.kicker+.clist{margin-top:8px}}</style>
+<style is:global>
+.abt{display:grid;grid-template-columns:minmax(0,1fr) minmax(180px,300px);gap:34px;align-items:end}.abt img{width:100%;border:2px solid var(--wall)}
+.me{display:grid;grid-template-columns:minmax(0,1.1fr) minmax(0,.9fr);gap:44px;align-items:stretch}.mtext{min-width:0}
+.mtext .big{font-size:clamp(24px,2.8vw,34px);line-height:1.18;font-weight:700;letter-spacing:-.02em;margin-bottom:16px}.mtext p{max-width:58ch}
+.sub{font-size:15px;font:500 13px var(--mono);color:var(--mut);margin:30px 0 8px;letter-spacing:0}
+.mem{list-style:none;padding:0;margin:0;border-top:1px solid var(--line)}.mem li{display:flex;justify-content:space-between;gap:6px 16px;flex-wrap:wrap;padding-block:9px;border-bottom:1px solid var(--line)}.mem span{color:var(--mut)}
+.rain{position:relative;margin:0;background:#020604;border:2px solid var(--wall);min-height:420px;overflow:hidden;min-width:0}.rain canvas{position:absolute;inset:0;width:100%;height:100%}
+.rain figcaption{position:absolute;left:18px;bottom:16px;font:500 15px var(--mono);color:#b9ffcf;text-shadow:0 0 10px #22ff6a}.rain figcaption span::after{content:"_";animation:blink 1.1s steps(1) infinite}@keyframes blink{50%{opacity:0}}
+.shelf{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:22px 20px;margin-top:10px}
+.book{margin:0;min-width:0}.book img,.book .plain{width:100%;aspect-ratio:2/3;object-fit:cover;border:1px solid var(--line);display:block;box-shadow:0 8px 18px -10px rgba(0,0,0,.45);transition:transform .25s}.book:hover img,.book:hover .plain{transform:translateY(-4px)}
+.book .plain{background:#7a2a1d;color:#f5ead8;padding:16px 14px;display:flex;flex-direction:column;justify-content:space-between}.book .plain span{font-size:19px;font-weight:700;line-height:1.15}.book .plain small{font:12px var(--mono);opacity:.85}
+.book figcaption{margin-top:9px;font-size:14px;line-height:1.35}.book i{display:block;font-style:normal;font-weight:700}.book figcaption span{display:block;color:var(--mut);font-size:13px;margin-top:2px}.book em{display:block;font-style:normal;font:12px var(--mono);color:var(--mut);margin-top:3px}
+.tl{list-style:none;margin:0;padding:0;border-top:2px solid var(--wall)}.tl li{display:grid;grid-template-columns:170px minmax(0,1fr);gap:20px;padding-block:18px;border-bottom:1px solid var(--line)}.tl time{font-size:13px;color:var(--mut);padding-top:5px}.tl p{max-width:68ch;margin-top:6px}
+@media(max-width:860px){.me{grid-template-columns:minmax(0,1fr)}.rain{min-height:300px}}
+@media(max-width:700px){.abt{grid-template-columns:minmax(0,1fr);gap:22px}.abt img{max-width:220px}.shelf{grid-template-columns:repeat(2,minmax(0,1fr));gap:20px 14px}.tl li{grid-template-columns:minmax(0,1fr);gap:7px;padding-block:24px}.tl p{margin-top:9px;line-height:1.6}.section{padding-block:44px}}
+</style>
+<script>
+let raf = 0, io: IntersectionObserver | null = null, ro: ResizeObserver | null = null;
+document.addEventListener('astro:page-load', () => {
+  const c = document.getElementById('rain') as HTMLCanvasElement | null; if (!c) return;
+  const g = c.getContext('2d')!, chars = 'ｱｲｳｴｵｶｷｸｹｺｻｼｽｾｿﾀﾁﾂﾃﾄﾅﾆﾇﾈﾉﾊﾋﾌﾍﾎﾏﾐﾑﾒﾓﾔﾕﾖﾗﾘﾙﾚﾛﾜﾝ0123456789:.=*+<>';
+  const reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
+  let W = 0, H = 0, fs = 16, drops: number[] = [], vis = true, last = 0;
+  const size = () => { const r = c.getBoundingClientRect(), d = Math.min(devicePixelRatio || 1, 2); W = r.width; H = r.height; c.width = W * d; c.height = H * d; g.setTransform(d, 0, 0, d, 0, 0); fs = W < 420 ? 13 : 16; drops = Array.from({ length: Math.ceil(W / fs) }, () => Math.random() * -H / fs); g.fillStyle = '#020604'; g.fillRect(0, 0, W, H); };
+  const frame = () => {
+    g.fillStyle = 'rgba(2,6,4,0.09)'; g.fillRect(0, 0, W, H); g.font = `${fs}px "DM Mono", monospace`;
+    drops.forEach((y, i) => { const ch = chars[(Math.random() * chars.length) | 0], x = i * fs, py = y * fs; g.fillStyle = Math.random() < 0.06 ? '#e8ffee' : '#21d860'; g.fillText(ch, x, py); if (py > H && Math.random() > 0.975) drops[i] = 0; else drops[i] = y + 1; });
+  };
+  const loop = (t: number) => { raf = requestAnimationFrame(loop); if (!vis || t - last < 55) return; last = t; frame(); };
+  ro = new ResizeObserver(() => { size(); if (reduce) for (let i = 0; i < 40; i++) frame(); }); ro.observe(c); size();
+  if (reduce) { for (let i = 0; i < 40; i++) frame(); return; }
+  io = new IntersectionObserver((e) => (vis = e[0].isIntersecting)); io.observe(c); raf = requestAnimationFrame(loop);
+});
+document.addEventListener('astro:before-swap', () => { cancelAnimationFrame(raf); io?.disconnect(); ro?.disconnect(); });
+</script>
