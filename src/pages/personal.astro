@@ -31,7 +31,6 @@ const next = [
   </div>
   <figure class="rain rv" aria-label="Interactive falling green code in the style of The Matrix">
     <canvas id="rain"></canvas>
-    <div class="pills"><button type="button" class="pill red" data-pill="red" aria-pressed="false">red pill</button><button type="button" class="pill blue" data-pill="blue" aria-pressed="true">blue pill</button></div>
   </figure>
 </div>
 
@@ -54,8 +53,8 @@ const next = [
 .mtext .big{font-size:clamp(24px,2.8vw,34px);line-height:1.18;font-weight:700;letter-spacing:-.02em;margin-bottom:16px}.mtext p{max-width:58ch}
 .sub{font-size:15px;font:500 13px var(--mono);color:var(--mut);margin:30px 0 8px;letter-spacing:0}
 .mem{list-style:none;padding:0;margin:0;border-top:1px solid var(--line)}.mem li{display:flex;justify-content:space-between;gap:6px 16px;flex-wrap:wrap;padding-block:9px;border-bottom:1px solid var(--line)}.mem span{color:var(--mut)}
-.rain{position:relative;margin:0;background:var(--panel);border:2px solid var(--wall);min-height:420px;overflow:hidden;min-width:0}.rain canvas{position:absolute;inset:0;width:100%;height:100%}
-.rain{cursor:crosshair}.pills{position:absolute;right:12px;bottom:12px;display:flex;gap:8px;z-index:2}.pill{font:12.5px var(--mono);padding:6px 11px;border:1px solid var(--fg);background:var(--bg);color:var(--fg);cursor:pointer;border-radius:2px;display:flex;align-items:center;gap:7px}.pill::before{content:"";width:9px;height:9px;border-radius:50%;background:var(--c)}.pill.red{--c:var(--hider)}.pill.blue{--c:#3d7bd9}.pill[aria-pressed=true]{background:var(--fg);color:var(--bg)}
+.rain{position:relative;margin:0;background:#17191d;border:2px solid var(--wall);min-height:420px;overflow:hidden;min-width:0}.rain canvas{position:absolute;inset:0;width:100%;height:100%}
+.rain{cursor:crosshair}.pills{position:absolute;right:12px;bottom:12px;display:flex;gap:8px;z-index:2}.pill{font:12.5px var(--mono);padding:6px 11px;border:1px solid #6d7378;background:#17191d;color:#ecedea;cursor:pointer;border-radius:2px;display:flex;align-items:center;gap:7px}.pill::before{content:"";width:9px;height:9px;border-radius:50%;background:var(--c)}.pill.red{--c:var(--hider)}.pill.blue{--c:#3d7bd9}.pill[aria-pressed=true]{background:#ecedea;color:#17191d;border-color:#ecedea}
 .shelf{display:grid;grid-template-columns:repeat(auto-fill,minmax(210px,1fr));gap:30px 26px;margin-top:12px}
 .book{margin:0;min-width:0}.book img,.book .plain{width:100%;aspect-ratio:2/3;object-fit:cover;border:1px solid var(--line);display:block;box-shadow:0 8px 18px -10px rgba(0,0,0,.45);transition:transform .25s}.book:hover img,.book:hover .plain{transform:translateY(-4px)}
 .book .plain{background:#7a2a1d;color:#f5ead8;padding:16px 14px;display:flex;flex-direction:column;justify-content:space-between}.book .plain span{font-size:19px;font-weight:700;line-height:1.15}.book .plain small{font:12px var(--mono);opacity:.85}
@@ -75,7 +74,7 @@ document.addEventListener('astro:page-load', () => {
   let ph = { text: '', t0: 0, row: 0, col: 0 }, phIdx = 0, nextPh = 2500;
   let C = { bg: '', fade: '', fadeR: '', box: '', head: '', glyph: '', hot: '', lock: '' };
   const hexA = (h: string, a: number) => { const m = h.replace('#', ''), v = parseInt(m.length === 3 ? m.split('').map((x) => x + x).join('') : m, 16); return `rgba(${v >> 16 & 255},${v >> 8 & 255},${v & 255},${a})`; };
-  const theme = () => { const s = getComputedStyle(document.documentElement), v = (n: string) => s.getPropertyValue(n).trim(); const dark = document.documentElement.dataset.theme === 'dark'; C = { bg: v('--panel'), fade: hexA(v('--panel'), 0.12), fadeR: hexA(v('--panel'), 0.07), box: hexA(v('--panel'), 0.9), head: v('--fg'), glyph: v('--seek'), hot: v('--fg'), lock: dark ? '#d9ffe5' : v('--fg') }; g.fillStyle = C.bg; g.fillRect(0, 0, W, H); };
+  const theme = () => { const s = getComputedStyle(document.documentElement), v = (n: string) => s.getPropertyValue(n).trim(); const dark = document.documentElement.dataset.theme === 'dark'; void dark; void v; C = { bg: '#17191d', fade: hexA('#17191d', 0.1), fadeR: hexA('#17191d', 0.06), box: hexA('#17191d', 0.88), head: '#ecedea', glyph: '#3cc482', hot: '#ecedea', lock: '#e8ffee' }; g.fillStyle = C.bg; g.fillRect(0, 0, W, H); };
   const mo = new MutationObserver(theme); mo.observe(document.documentElement, { attributes: true, attributeFilter: ['data-theme'] });
   const rnd = () => G[(Math.random() * G.length) | 0];
   const size = () => { const r = c.getBoundingClientRect(), d = Math.min(devicePixelRatio || 1, 2); W = r.width; H = r.height; c.width = W * d; c.height = H * d; g.setTransform(d, 0, 0, d, 0, 0); fs = W < 420 ? 13 : 16; cols = Math.ceil(W / fs); rows = Math.ceil(H / fs); y = Array.from({ length: cols }, () => Math.random() * -rows); sp = Array.from({ length: cols }, () => 0.45 + Math.random() * 0.7); theme(); };
@@ -91,7 +90,7 @@ document.addEventListener('astro:page-load', () => {
     if (ph.text) {
       const age = t - ph.t0, n = ph.text.length;
       g.fillStyle = C.box; g.fillRect(ph.col * fs - 8, ph.row * fs - 6, n * fs * 0.62 + 16, fs + 12);
-      for (let k = 0; k < n; k++) { const ch = ph.text[k], lock = age > 140 * k + 300, out = age > 3600 + 40 * k; if (ch === ' ' || out) continue; g.fillStyle = lock ? C.lock : C.glyph; g.shadowColor = C.glyph; g.shadowBlur = lock ? 6 : 0; g.fillText(lock ? ch : rnd(), ph.col * fs + k * fs * 0.62, ph.row * fs); }
+      for (let k = 0; k < n; k++) { const ch = ph.text[k], lock = age > 140 * k + 300, out = age > 3600 + 40 * k; if (ch === ' ' || out) continue; g.fillStyle = lock ? C.lock : C.glyph; g.shadowColor = '#3cff8a'; g.shadowBlur = lock ? 10 : 0; g.fillText(lock ? ch : rnd(), ph.col * fs + k * fs * 0.62, ph.row * fs); }
       g.shadowBlur = 0; if (age > 3600 + 40 * n + 300) ph.text = '';
     } else if (t > nextPh) {
       const text = PH[phIdx++ % PH.length]; ph = { text, t0: t, row: Math.max(1, Math.floor(rows * (0.25 + Math.random() * 0.4))), col: Math.max(1, Math.floor((W - text.length * fs * 0.62) / fs / 2)) }; nextPh = t + 7000;
@@ -100,7 +99,6 @@ document.addEventListener('astro:page-load', () => {
   const loop = (t: number) => { raf = requestAnimationFrame(loop); if (!vis || t - last < (red ? 34 : 50)) return; last = t; frame(t); };
   fig.addEventListener('pointermove', (e) => { const r = c.getBoundingClientRect(); mx = e.clientX - r.left; my = e.clientY - r.top; });
   fig.addEventListener('pointerleave', () => { mx = my = -999; });
-  fig.querySelectorAll<HTMLButtonElement>('[data-pill]').forEach((b) => b.addEventListener('click', () => { red = b.dataset.pill === 'red'; fig.querySelectorAll('[data-pill]').forEach((x) => x.setAttribute('aria-pressed', String(x === b))); if (red) { ph = { text: 'there is no spoon.', t0: performance.now(), row: Math.floor(rows / 2), col: Math.max(1, Math.floor((W - 18 * fs * 0.62) / fs / 2)) }; } }));
   ro = new ResizeObserver(() => { size(); if (reduce) for (let i = 0; i < 40; i++) frame(0); }); ro.observe(c); size();
   if (reduce) { for (let i = 0; i < 40; i++) frame(0); return; }
   io = new IntersectionObserver((e) => (vis = e[0].isIntersecting)); io.observe(c); raf = requestAnimationFrame(loop);
