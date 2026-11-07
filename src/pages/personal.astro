@@ -36,10 +36,10 @@ const next = [
   <MusicCorner />
 </div>
 
-<div class="wrap section"><hr class="rule"><h2 class="h2 rv" style="margin-top:26px">Books</h2>
-  <p class="kicker rv">Reading now</p>
+<div class="wrap section"><hr class="rule"><h2 class="h2 rv" style="margin-top:26px">Books I'm interested in</h2>
+  <h3 class="shelfh rv">Reading now</h3>
   <div class="shelf rv">{reading.map(k=><figure class="book">{k.img?<img src={`${b}/media/books/${k.img}.webp`} alt={`Cover of ${k.t}`} loading="lazy">:<div class="plain"><span>{k.t}</span><small>{k.a}</small></div>}<figcaption><i>{k.t}</i><span>{k.a}</span>{k.note&&<em>{k.note}</em>}</figcaption></figure>)}</div>
-  <p class="kicker rv" style="margin-top:30px">Next on the list</p>
+  <h3 class="shelfh rv" style="margin-top:40px">Next on the list</h3>
   <div class="shelf rv">{next.map(k=><figure class="book"><img src={`${b}/media/books/${k.img}.webp`} alt={`Cover of ${k.t}`} loading="lazy"><figcaption><i>{k.t}</i><span>{k.a}</span></figcaption></figure>)}</div>
 </div>
 
@@ -51,6 +51,7 @@ const next = [
 .mtext .big{font-size:clamp(24px,2.8vw,34px);line-height:1.18;font-weight:700;letter-spacing:-.02em;margin-bottom:16px}.mtext p{max-width:58ch}.mtext p+p{margin-top:14px}
 .sub{font-size:15px;font:500 13px var(--mono);color:var(--mut);margin:30px 0 8px;letter-spacing:0}
 .mem{list-style:none;padding:0;margin:0;border-top:1px solid var(--line)}.mem li{display:flex;justify-content:space-between;gap:6px 16px;flex-wrap:wrap;padding-block:9px;border-bottom:1px solid var(--line)}.mem span{color:var(--mut)}
+.shelfh{font-size:clamp(21px,2.2vw,25px);letter-spacing:-.02em;margin-top:18px}
 .shelf{display:grid;grid-template-columns:repeat(auto-fill,minmax(210px,1fr));gap:30px 26px;margin-top:12px}
 .book{margin:0;min-width:0}.book img,.book .plain{width:100%;aspect-ratio:2/3;object-fit:cover;border:1px solid var(--line);display:block;box-shadow:0 8px 18px -10px rgba(0,0,0,.45);transition:transform .25s}.book:hover img,.book:hover .plain{transform:translateY(-4px)}
 .book .plain{background:#7a2a1d;color:#f5ead8;padding:16px 14px;display:flex;flex-direction:column;justify-content:space-between}.book .plain span{font-size:19px;font-weight:700;line-height:1.15}.book .plain small{font:12px var(--mono);opacity:.85}
