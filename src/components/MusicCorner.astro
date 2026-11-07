@@ -9,7 +9,6 @@ const b = import.meta.env.BASE_URL.replace(/\/$/, '');
     <button type="button" class="mnav next" aria-label="Next song"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9 5l7 7-7 7"/></svg></button>
   </div>
   <p class="now"><b class="song"></b><span class="who"></span></p>
-  <div class="ytbox"></div>
 </section>
 <style is:global>
 .mc{margin-top:8px}
@@ -30,26 +29,17 @@ const b = import.meta.env.BASE_URL.replace(/\/$/, '');
 .mnav{position:absolute;top:50%;translate:0 -50%;z-index:30;width:46px;height:46px;border-radius:50%;border:2px solid var(--wall);background:var(--bg);color:var(--fg);display:grid;place-items:center;cursor:pointer;padding:0}
 .mnav:hover{background:var(--fg);color:var(--bg)}.mnav svg{width:22px;height:22px;fill:none;stroke:currentColor;stroke-width:2.6;stroke-linecap:round;stroke-linejoin:round}.mnav.prev{left:6px}.mnav.next{right:6px}
 .now{position:relative;text-align:center;margin-top:-30px;display:flex;flex-direction:column;gap:2px}.now .song{font-size:clamp(22px,2.4vw,28px);letter-spacing:-.02em}.now .who{color:var(--mut)}
-.ytbox{position:fixed;left:-1200px;bottom:0;width:356px;height:200px;pointer-events:none}.ytbox iframe{width:356px;height:200px;border:0;display:block}
 @media(prefers-reduced-motion:reduce){.rec .vinyl{animation:none!important}}
 </style>
 <script>
+import { player } from '../scripts/player';
 let cleanup: (() => void) | null = null;
-function loadApi(): Promise<any> {
-  const w = window as any; if (w.YT?.Player) return Promise.resolve(w.YT);
-  return new Promise((res) => { const prev = w.onYouTubeIframeAPIReady; w.onYouTubeIframeAPIReady = () => { prev?.(); res(w.YT); }; if (!document.querySelector('script[data-yt-api]')) { const s = document.createElement('script'); s.src = 'https://www.youtube.com/iframe_api'; s.dataset.ytApi = '1'; document.head.append(s); } });
-}
 document.addEventListener('astro:page-load', () => {
   const root = document.querySelector<HTMLElement>('[data-mc]'); if (!root) return;
-  const T: { yt: string; t: string; a: string; al: string }[] = JSON.parse(root.dataset.tracks!);
-  const recs = [...root.querySelectorAll<HTMLElement>('.rec')], stage = root.querySelector<HTMLElement>('.stage')!, box = root.querySelector<HTMLElement>('.ytbox')!;
-  const song = root.querySelector<HTMLElement>('.song')!, who = root.querySelector<HTMLElement>('.who')!;
-  const n = T.length; let cur = 0, playing = false, want = false, fails = 0;
-  // Every record near the centre has its own loaded player, and a click starts that player directly:
-  // browsers block sound that begins later than the gesture that asked for it, so swapping videos inside one player goes silent.
-  const P: any[] = [], ready: boolean[] = [], made: boolean[] = [];
-  const rel = (i: number) => { let o = i - cur; if (o > n / 2) o -= n; if (o < -n / 2) o += n; return o; };
-  const setPlay = (p: boolean) => { playing = p; root.classList.toggle('play', p); };
+  const { T, s, warm, toggle, move, subscribe } = player;
+  const recs = [...root.querySelectorAll<HTMLElement>('.rec')], stage = root.querySelector<HTMLElement>('.stage')!;
+  const song = root.querySelector<HTMLElement>('.song')!, who = root.querySelector<HTMLElement>('.who')!, n = T.length;
+  const rel = (i: number) => { let o = i - s.cur; if (o > n / 2) o -= n; if (o < -n / 2) o += n; return o; };
   const render = () => {
     const step = Math.min(stage.clientWidth * 0.27, 260);
     recs.forEach((r, i) => {
@@ -59,41 +49,17 @@ document.addEventListener('astro:page-load', () => {
       r.style.zIndex = String(20 - a); r.style.filter = a ? `brightness(${1 - a * 0.18})` : '';
       r.style.pointerEvents = a > 2 ? 'none' : ''; r.classList.toggle('on', o === 0);
     });
-    song.textContent = T[cur].t; who.textContent = T[cur].a;
+    root.classList.toggle('play', s.playing);
+    song.textContent = T[s.cur].t; who.textContent = s.failed ? 'Playback is not available right now' : T[s.cur].a;
   };
-  const make = async (i: number) => {
-    if (made[i]) return; made[i] = true;
-    const YT = await loadApi(); if (!root.isConnected) return;
-    const el = document.createElement('div'); el.id = `ytp${i}`; box.append(el);
-    P[i] = new YT.Player(el.id, { width: 356, height: 200, videoId: T[i].yt, playerVars: { controls: 0, rel: 0, playsinline: 1, iv_load_policy: 3, disablekb: 1, origin: location.origin, enablejsapi: 1 },
-      events: {
-        onReady: () => { ready[i] = true; if (i === cur && want) P[i].playVideo(); },
-        onError: () => { if (i === cur) skip(); },
-        onStateChange: (e: any) => {
-          if (i !== cur) { if (e.data === 1) P[i].stopVideo(); return; }
-          if (e.data === 1) { fails = 0; want = true; setPlay(true); }
-          if (e.data === 2) { want = false; setPlay(false); }
-          if (e.data === 0) move(1);
-        } } });
-  };
-  const warm = () => { make(cur); make((cur + 1) % n); make((cur + n - 1) % n); };
-  const start = () => { want = true; warm(); if (ready[cur]) P[cur].playVideo(); };
-  const move = (d: number) => {
-    const was = want; if (ready[cur]) P[cur].stopVideo();
-    cur = (cur + d + n) % n; setPlay(false); render(); want = false; warm();
-    if (was) start();
-  };
-  // A track YouTube refuses to embed is skipped; the player itself is never shown.
-  const skip = () => { if (++fails < n) { want = true; move(1); return; } fails = 0; want = false; setPlay(false); who.textContent = 'Playback is not available right now'; };
-  const toggle = () => { if (playing) { want = false; P[cur].pauseVideo(); } else start(); };
   recs.forEach((r, i) => { r.addEventListener('click', (e) => { const o = rel(i); if (o) move(o); else if ((e.target as HTMLElement).closest('.pp')) toggle(); }); });
   root.querySelector('.prev')!.addEventListener('click', () => move(-1));
   root.querySelector('.next')!.addEventListener('click', () => move(1));
   stage.addEventListener('keydown', (e) => { if (e.target !== stage) return; if (e.key === 'ArrowLeft') { move(-1); e.preventDefault(); } if (e.key === 'ArrowRight') { move(1); e.preventDefault(); } if (e.key === ' ' || e.key === 'Enter') { toggle(); e.preventDefault(); } });
   let sx = 0; stage.addEventListener('pointerdown', (e) => (sx = e.clientX)); stage.addEventListener('pointerup', (e) => { const d = e.clientX - sx; if (Math.abs(d) > 45) move(d < 0 ? 1 : -1); });
-  const ro = new ResizeObserver(render); ro.observe(stage); render();
+  const off = subscribe(render), ro = new ResizeObserver(render); ro.observe(stage); render();
   const near = new IntersectionObserver((e) => { if (e[0].isIntersecting) { near.disconnect(); warm(); } }, { rootMargin: '700px' }); near.observe(stage);
-  cleanup = () => { ro.disconnect(); near.disconnect(); P.forEach((q) => { try { q?.destroy(); } catch {} }); };
+  cleanup = () => { off(); ro.disconnect(); near.disconnect(); };
 });
 document.addEventListener('astro:before-swap', () => { cleanup?.(); cleanup = null; });
 </script>

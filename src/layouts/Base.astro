@@ -24,6 +24,7 @@ const full = title === 'Onur Kansoy' ? title : `${title} · Onur Kansoy`;
 <header class="nav" transition:persist="nav"><div class="in">
  <a class="brand" href={`${b}/`}>Onur Kansoy</a>
  <nav class="links" aria-label="Main">{nav.map(([n,h])=><a href={`${b}${h}/`} data-nav={h}>{n}</a>)}</nav>
+ <button class="mini" id="mini" type="button" hidden><span class="md" aria-hidden="true"></span><span class="mx"><b class="mt"></b><span class="ma"></span></span><svg class="i-play" viewBox="0 0 24 24" aria-hidden="true"><path d="M8 5v14l11-7z"/></svg><svg class="i-pause" viewBox="0 0 24 24" aria-hidden="true"><path d="M7 5h4v14H7zM13 5h4v14h-4z"/></svg></button>
  <button class="theme" id="theme" type="button" aria-label="Switch between light and dark theme" title="Light or dark theme"><svg class="moon" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M20.7 14.7A9 9 0 0 1 9.3 3.3a9 9 0 1 0 11.4 11.4Z"/></svg><svg class="sun" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><circle cx="12" cy="12" r="4.2" fill="currentColor"/><path d="M12 2v2.4M12 19.6V22M2 12h2.4M19.6 12H22M4.9 4.9l1.7 1.7M17.4 17.4l1.7 1.7M4.9 19.1l1.7-1.7M17.4 6.6l1.7-1.7"/></svg></button>
  </div><div class="bar" id="bar"></div></header>
 <main id="main"><slot /></main>
@@ -32,4 +33,5 @@ const full = title === 'Onur Kansoy' ? title : `${title} · Onur Kansoy`;
  <div class="ls"><a href="https://github.com/Anka256">GitHub</a><a href="https://huggingface.co/TheArchitect256">Hugging Face</a><a href="https://linkedin.com/in/onurkansoy">LinkedIn</a></div>
 </div></footer>
 <script src="../scripts/motion.ts"></script>
+<script src="../scripts/mini.ts"></script>
 </body></html>

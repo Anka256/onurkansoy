@@ -34,6 +34,7 @@ const io = new IntersectionObserver((es) => es.forEach((e) => { if (e.isIntersec
 document.addEventListener('astro:page-load', () => {
   markNav(); progress(); navh();
   document.querySelectorAll<HTMLAnchorElement>('a[href^="http"]').forEach((a) => { if (a.host !== location.host) { a.target = '_blank'; a.rel = 'noopener noreferrer'; } });
+  document.querySelectorAll<HTMLAnchorElement>('a[href$="/cv/"],a[href$=".pdf"]').forEach((a) => { a.target = '_blank'; });
   if (reduce) return;
   document.querySelectorAll<HTMLElement>('.rv').forEach((el) => {
     if (el.getBoundingClientRect().top < innerHeight * 0.94) return;
